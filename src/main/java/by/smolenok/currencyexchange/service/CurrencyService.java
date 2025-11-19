@@ -27,6 +27,7 @@ public class CurrencyService {
                 currencyResponses.add(currencyResponseDto);
             }
         }else {
+            log.error("No currencies found in database");
             throw new BusinessLogicException("No currencies found in database");
         }
         return currencyResponses;

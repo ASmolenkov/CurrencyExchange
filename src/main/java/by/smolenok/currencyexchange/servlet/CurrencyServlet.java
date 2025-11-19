@@ -31,6 +31,7 @@ public class CurrencyServlet extends HttpServlet {
         }catch (DataAccessException e){
             JsonUtil.sendError("Service temporarily unavailable",HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
         }catch (BusinessLogicException e){
+            log.error(e.getMessage(), e);
             JsonUtil.sendError("Currencies is not found", HttpServletResponse.SC_NOT_FOUND, resp);
         }
     }

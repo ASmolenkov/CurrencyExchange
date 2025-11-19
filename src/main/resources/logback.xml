@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+<configuration debug="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%cyan(%d{HH:mm:ss.SSS}) %gray(│) %highlight(%-5level) %gray(│) %boldWhite(%logger{36}) %gray(│)
+                %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>D:/Java/Project/CurrencyExchange/logs/app.log</file>
+        <fileNamePattern>D:/Java/Project/CurrencyExchange/logs/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>300MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 
     <logger name="by.smolenok.currencyexchange" level="DEBUG"/>
+
+    <logger name="org.sqlite" level="WARN"/>
+
 </configuration>

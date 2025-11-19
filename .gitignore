@@ -38,3 +38,10 @@ build/
 ### Mac OS ###
 .DS_Store
 .idea
+*.db
+*.sqlite
+*.mdf
+*.ldf
+*.frm
+*.ibd
+logs/
