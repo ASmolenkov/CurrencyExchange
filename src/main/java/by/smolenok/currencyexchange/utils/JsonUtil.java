@@ -1,5 +1,6 @@
 package by.smolenok.currencyexchange.utils;
 
+import by.smolenok.currencyexchange.dto.response.ErrorApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -10,12 +11,13 @@ public class JsonUtil {
 
     private JsonUtil(){}
 
-    public static void sendJson(Object o, HttpServletResponse response) throws IOException {
+    public static void sendJson(Object o, int code, HttpServletResponse response) throws IOException {
+        response.setStatus(code);
         objectMapper.writeValue(response.getWriter(), o);
     }
 
     public static void sendError(String message, int errorCode, HttpServletResponse response) throws IOException {
-        response.setStatus(errorCode);
-        sendJson(message, response);
+        ErrorApi errorApi = new ErrorApi(message, errorCode);
+        sendJson(errorApi, errorCode, response);
     }
 }

@@ -1,24 +1,22 @@
-package by.smolenok.currencyexchange.model;
+package by.smolenok.currencyexchange.dto.response;
 
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
-public class Currency {
+public class CurrencyResponseDto {
     private int id;
     private String name;
     private String code;
     private String sign;
 
 
-    public Currency() {
+    public CurrencyResponseDto() {
     }
 
-    public Currency(int id, String name, String code, String sign) {
+    public CurrencyResponseDto(int id, String name, String code, String sign) {
         this.id = id;
         this.name = name;
         this.code = code;
