@@ -12,20 +12,16 @@ import java.sql.SQLException;
 public class CurrencyMapper {
 
     public CurrencyResponseDto toResponse(Currency currency) {
-        return new CurrencyResponseDto(currency.getId(), currency.getFullName(), currency.getCode(), currency.getSign());
+        return new CurrencyResponseDto(currency.getId(), currency.getName(), currency.getCode(), currency.getSign());
     }
 
     public Currency resultSetToCurrency(ResultSet resultSet) throws SQLException {
-        if(resultSet.next()){
-            return new Currency(
-                    resultSet.getInt("id"),
-                    resultSet.getString("code"),
-                    resultSet.getString("full_name"),
-                    resultSet.getString("sign")
-            );
-        }else {
-            throw new ModelNotFoundException("Currency not found");
-        }
+        return Currency.builder()
+                .id(resultSet.getInt("id"))
+                .name(resultSet.getString("full_name"))
+                .code(resultSet.getString("code"))
+                .sign(resultSet.getString("sign"))
+                .build();
 
     }
 

@@ -1,5 +1,6 @@
 package by.smolenok.currencyexchange.servlet;
 
+import by.smolenok.currencyexchange.dto.request.CurrencyRequestDto;
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
 import by.smolenok.currencyexchange.exeptions.*;
 import by.smolenok.currencyexchange.service.CurrencyService;
@@ -26,6 +27,7 @@ public class CurrencyServlet extends HttpServlet {
         try {
             String path = req.getPathInfo();
             String codeCurrency = PathUtils.extractCurrencyCode(path);
+            log.info("Полученный путь {}", codeCurrency);
             if (ValidationUtils.codeIsEmpty(codeCurrency)) {
                 List<CurrencyResponseDto> currencyResponses = currencyService.getCurrencies();
                 JsonUtil.sendJson(currencyResponses, HttpServletResponse.SC_OK, resp);
@@ -48,5 +50,31 @@ public class CurrencyServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            String name = req.getParameter("name");
+            String code = req.getParameter("code");
+            String sign = req.getParameter("sign");
+            CurrencyRequestDto currencyRequest;
+            if(sign == null){
+                currencyRequest = CurrencyRequestDto.builder().name(name).code(code).build();
+            }else {
+                currencyRequest = CurrencyRequestDto.builder().name(name).code(code).sign(sign).build();
+            }
 
+            CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
+            if(currencyResponse.getId() != 0){
+                log.info("New currency created!");
+                JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
+            }
+        }catch (DataAccessException e){
+            log.error("Service temporarily unavailable");
+            JsonUtil.sendError("Service temporarily unavailable", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,resp);
+        }catch (UniqueDataException e){
+            log.warn("Currency with this code already exists.");
+            JsonUtil.sendError("Currency with this code already exists", HttpServletResponse.SC_CONFLICT, resp);
+        }
+
+    }
 }

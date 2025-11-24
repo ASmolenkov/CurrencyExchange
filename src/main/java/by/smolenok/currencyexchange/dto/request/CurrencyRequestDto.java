@@ -1,14 +1,12 @@
-package by.smolenok.currencyexchange.model;
-
+package by.smolenok.currencyexchange.dto.request;
 
 import lombok.*;
 
 @Value
 @Builder
-public class Currency {
-     int id;
+@With
+public class CurrencyRequestDto {
      String name;
      String code;
      String sign;
-
 }
