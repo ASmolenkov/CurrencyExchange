@@ -27,11 +27,11 @@ public class CurrencyServlet extends HttpServlet {
             String path = req.getPathInfo();
             String codeCurrency = PathUtils.extractCurrencyCode(path);
             if (ValidationUtils.codeIsEmpty(codeCurrency)) {
-                List<CurrencyResponseDto> currencyResponses = currencyService.getAllCurrencies();
+                List<CurrencyResponseDto> currencyResponses = currencyService.getCurrencies();
                 JsonUtil.sendJson(currencyResponses, HttpServletResponse.SC_OK, resp);
                 return;
             }
-            CurrencyResponseDto currencyResponse = currencyService.getCurrencyByCode(codeCurrency);
+            CurrencyResponseDto currencyResponse = currencyService.getCurrency(codeCurrency);
             JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_OK, resp);
         } catch (DataAccessException e) {
             log.error("Service temporarily unavailable", e);

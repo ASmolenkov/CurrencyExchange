@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 public class CurrencyService {
     private final CurrencyDao currencyDao = new CurrencyDao();
 
-    public List<CurrencyResponseDto> getAllCurrencies() throws DataAccessException {
+    public List<CurrencyResponseDto> getCurrencies() throws DataAccessException {
         return currencyDao.findAll().stream().
                 map(CurrencyMapper::toResponse).
                 collect(Collectors.toList());
     }
 
-    public CurrencyResponseDto getCurrencyByCode(String codeCurrency) throws ValidationCodeException, ModelNotFoundException {
+    public CurrencyResponseDto getCurrency(String codeCurrency) throws ValidationCodeException, ModelNotFoundException {
         log.info("Start getCurrencyByCode");
         log.info("Code currency {}", codeCurrency);
         Currency currency = currencyDao.findByCode(codeCurrency);

@@ -1,4 +1,4 @@
 package by.smolenok.currencyexchange.dto.response;
 
-public record ErrorApi(String message, int statusCode) {
+public record ErrorApi(String message) {
 }

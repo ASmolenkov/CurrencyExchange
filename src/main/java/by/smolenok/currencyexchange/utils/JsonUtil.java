@@ -17,7 +17,7 @@ public class JsonUtil {
     }
 
     public static void sendError(String message, int errorCode, HttpServletResponse response) throws IOException {
-        ErrorApi errorApi = new ErrorApi(message, errorCode);
+        ErrorApi errorApi = new ErrorApi(message);
         sendJson(errorApi, errorCode, response);
     }
 }

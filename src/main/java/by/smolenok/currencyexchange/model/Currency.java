@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class Currency {
     private int id;
-    private String name;
+    private String fullName;
     private String code;
     private String sign;
 
@@ -18,9 +18,9 @@ public class Currency {
     public Currency() {
     }
 
-    public Currency(int id, String name, String code, String sign) {
+    public Currency(int id, String fullName, String code, String sign) {
         this.id = id;
-        this.name = name;
+        this.fullName = fullName;
         this.code = code;
         this.sign = sign;
     }
