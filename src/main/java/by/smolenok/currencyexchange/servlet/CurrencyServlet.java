@@ -27,8 +27,7 @@ public class CurrencyServlet extends HttpServlet {
         try {
             String path = req.getPathInfo();
             String codeCurrency = PathUtils.extractCurrencyCode(path);
-            log.info("Полученный путь {}", codeCurrency);
-            if (ValidationUtils.codeIsEmpty(codeCurrency)) {
+            if (ValidationUtils.isEmpty(codeCurrency)) {
                 List<CurrencyResponseDto> currencyResponses = currencyService.getCurrencies();
                 JsonUtil.sendJson(currencyResponses, HttpServletResponse.SC_OK, resp);
                 return;
@@ -41,7 +40,7 @@ public class CurrencyServlet extends HttpServlet {
         } catch (BusinessLogicException e) {
             log.error("Currencies is not found", e);
             JsonUtil.sendError("Currencies is not found", HttpServletResponse.SC_NOT_FOUND, resp);
-        } catch (ValidationCodeException e) {
+        } catch (ValidationException e) {
             log.error("Incorrect currency code", e);
             JsonUtil.sendError("Incorrect currency code!", HttpServletResponse.SC_BAD_REQUEST, resp);
         } catch (ModelNotFoundException e) {
@@ -56,25 +55,28 @@ public class CurrencyServlet extends HttpServlet {
             String name = req.getParameter("name");
             String code = req.getParameter("code");
             String sign = req.getParameter("sign");
-            CurrencyRequestDto currencyRequest;
-            if(sign == null){
-                currencyRequest = CurrencyRequestDto.builder().name(name).code(code).build();
-            }else {
-                currencyRequest = CurrencyRequestDto.builder().name(name).code(code).sign(sign).build();
-            }
+
+            ValidationUtils.validateRequiredParameter(name, "name");
+            ValidationUtils.validateRequiredParameter(code, "code");
+
+            CurrencyRequestDto currencyRequest = CurrencyRequestDto.builder()
+                    .code(code.trim().toUpperCase())
+                    .name(name.trim())
+                    .sign(sign != null ? sign.trim() : null)
+                    .build();
 
             CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
-            if(currencyResponse.getId() != 0){
-                log.info("New currency created!");
-                JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
-            }
+            JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
+
         }catch (DataAccessException e){
             log.error("Service temporarily unavailable");
             JsonUtil.sendError("Service temporarily unavailable", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,resp);
         }catch (UniqueDataException e){
             log.warn("Currency with this code already exists.");
             JsonUtil.sendError("Currency with this code already exists", HttpServletResponse.SC_CONFLICT, resp);
+        }catch (ValidationException e){
+            log.warn("Validation failed: {}", e.getMessage());
+            JsonUtil.sendError("Validation error", HttpServletResponse.SC_BAD_REQUEST, resp);
         }
-
     }
 }
