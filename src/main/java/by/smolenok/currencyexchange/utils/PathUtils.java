@@ -9,7 +9,11 @@ public class PathUtils {
             return null;
         }
         String code = pathInfo.replaceAll("^/+","");
-        ValidationUtils.validateCurrencyCode(code);
+        if(code.length() == 3){
+            ValidationUtils.validateCurrencyCode(code);
+        }else {
+            ValidationUtils.validateExchangeRatesCode(code);
+        }
         return code.toUpperCase();
     }
 }

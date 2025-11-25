@@ -1,7 +1,6 @@
 package by.smolenok.currencyexchange.mapper;
 
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
-import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
 import by.smolenok.currencyexchange.model.Currency;
 import lombok.experimental.UtilityClass;
 
