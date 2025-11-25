@@ -28,13 +28,13 @@ public class CurrencyService {
     }
 
     public CurrencyResponseDto createCurrency(CurrencyRequestDto currencyRequest) throws DataAccessException, UniqueDataException {
-        if(currencyDao.existsByCode(currencyRequest.getCode())){
-            throw new UniqueDataException(currencyRequest.getCode());
+        if(currencyDao.existsByCode(currencyRequest.code())){
+            throw new UniqueDataException(currencyRequest.code());
         }
         Currency currency = Currency.builder()
-                .name(currencyRequest.getName())
-                .code(currencyRequest.getCode())
-                .sign(currencyRequest.getSign())
+                .name(currencyRequest.name())
+                .code(currencyRequest.code())
+                .sign(currencyRequest.sign())
                 .build();
         Currency currencyUpdate = currencyDao.save(currency);
         return CurrencyMapper.toResponse(currencyUpdate);

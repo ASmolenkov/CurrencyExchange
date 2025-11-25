@@ -62,11 +62,7 @@ public class CurrencyServlet extends HttpServlet {
             ValidationUtils.validateRequiredParameter(name, PARAM_NAME);
             ValidationUtils.validateCurrencyCode(code);
 
-            CurrencyRequestDto currencyRequest = CurrencyRequestDto.builder()
-                    .code(code.trim().toUpperCase())
-                    .name(name.trim())
-                    .sign(sign != null ? sign.trim() : null)
-                    .build();
+            CurrencyRequestDto currencyRequest = CurrencyRequestDto.of(name, code, sign);
 
             CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
             JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
