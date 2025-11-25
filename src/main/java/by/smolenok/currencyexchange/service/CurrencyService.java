@@ -6,7 +6,6 @@ import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
 import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
 import by.smolenok.currencyexchange.exeptions.UniqueDataException;
-import by.smolenok.currencyexchange.exeptions.ValidationException;
 import by.smolenok.currencyexchange.mapper.CurrencyMapper;
 import by.smolenok.currencyexchange.model.Currency;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +21,9 @@ public class CurrencyService {
         return currencyDao.findAll().stream().map(CurrencyMapper::toResponse).collect(Collectors.toList());
     }
 
-    public CurrencyResponseDto getCurrency(String codeCurrency) throws ValidationException, ModelNotFoundException {
+    public CurrencyResponseDto getCurrency(String codeCurrency) throws ModelNotFoundException {
         log.info("Start getCurrencyByCode");
         Currency currency = currencyDao.findByCode(codeCurrency);
-        if(currency == null){
-            log.error("No currency found in database");
-            throw new ModelNotFoundException("No currency found in database");
-        }
         return CurrencyMapper.toResponse(currency);
     }
 

@@ -1,5 +1,6 @@
 package by.smolenok.currencyexchange.dao;
 
+import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
 import by.smolenok.currencyexchange.exeptions.UniqueDataException;
@@ -32,11 +33,6 @@ public class CurrencyDao {
             stmt.setString(1, currency.getCode());
             stmt.setString(2, currency.getName());
             stmt.setString(3, currency.getSign());
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                log.error("Creating currency failed, no rows affected.");
-                throw new UniqueDataException("Currency with this code already exists.");
-            }
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
@@ -48,14 +44,14 @@ public class CurrencyDao {
                             .build();
                 } else {
                     log.error("Creating currency failed, no ID obtained.");
-                    throw new DataAccessException("Creating currency failed, no ID obtained.");
+                    throw new DataAccessException(ErrorType.INVALID_CREATE_CURRENCY_NO_ID.getMessage());
                 }
             }
         } catch (SQLException e) {
-            if (e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed")) {
-                throw new UniqueDataException("Currency with code '" + currency.getCode() + "' already exists", e);
+            if (e.getMessage() != null && e.getMessage().contains(ErrorType.UNIQUE_FAILED.getMessage())) {
+                throw new UniqueDataException(ErrorType.CURRENCY_CODE_EXISTS_TEMPLATE.getMessage().formatted(currency.getCode()), e);
             } else {
-                throw new DataAccessException("Error saving currency to database", e);
+                throw new DataAccessException(ErrorType.SAVE_ERROR_CURRENCY.getMessage(), e);
             }
         }
     }
@@ -73,7 +69,7 @@ public class CurrencyDao {
             return currencies;
         } catch (SQLException e) {
             log.error("Error retrieving currencies from the database", e);
-            throw new DataAccessException("Error retrieving currencies from the database", e);
+            throw new DataAccessException(ErrorType.ERROR_RETRIEVING_CURRENCIES.getMessage(), e);
         }
     }
 
@@ -82,11 +78,14 @@ public class CurrencyDao {
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_CODE)) {
             statement.setString(1, code);
             ResultSet resultSet = statement.executeQuery();
+            if(!resultSet.next()){
+                throw new ModelNotFoundException(ErrorType.CURRENCY_CODE_EXISTS_TEMPLATE.getMessage().formatted(code));
+            }
             return CurrencyMapper.resultSetToCurrency(resultSet);
 
         } catch (SQLException e) {
             log.error("Error retrieving currencies from the database", e);
-            throw new DataAccessException("Error retrieving currencies from the database", e);
+            throw new DataAccessException(ErrorType.ERROR_RETRIEVING_CURRENCIES.getMessage(), e);
         }
     }
 

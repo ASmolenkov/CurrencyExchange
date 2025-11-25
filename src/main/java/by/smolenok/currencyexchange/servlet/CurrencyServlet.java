@@ -2,6 +2,7 @@ package by.smolenok.currencyexchange.servlet;
 
 import by.smolenok.currencyexchange.dto.request.CurrencyRequestDto;
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
+import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.*;
 import by.smolenok.currencyexchange.service.CurrencyService;
 import by.smolenok.currencyexchange.utils.JsonUtil;
@@ -20,6 +21,10 @@ import java.util.List;
 @Slf4j
 @WebServlet("/currencies/*")
 public class CurrencyServlet extends HttpServlet {
+
+    private static final String PARAM_NAME = "name";
+    private static final String PARAM_CODE = "code";
+    private static final String PARAM_SIGN = "sign";
     private final CurrencyService currencyService = new CurrencyService();
 
     @Override
@@ -35,29 +40,27 @@ public class CurrencyServlet extends HttpServlet {
             CurrencyResponseDto currencyResponse = currencyService.getCurrency(codeCurrency);
             JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_OK, resp);
         } catch (DataAccessException e) {
-            log.error("Service temporarily unavailable", e);
-            JsonUtil.sendError("Service temporarily unavailable", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
-        } catch (BusinessLogicException e) {
-            log.error("Currencies is not found", e);
-            JsonUtil.sendError("Currencies is not found", HttpServletResponse.SC_NOT_FOUND, resp);
+            log.error(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
+            JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
         } catch (ValidationException e) {
-            log.error("Incorrect currency code", e);
-            JsonUtil.sendError("Incorrect currency code!", HttpServletResponse.SC_BAD_REQUEST, resp);
+            log.error(ErrorType.INVALID_CURRENCY_CODE.getMessage(), e);
+            JsonUtil.sendError(ErrorType.INVALID_CURRENCY_CODE.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
         } catch (ModelNotFoundException e) {
-            log.error("Currency is not Found", e);
-            JsonUtil.sendError("Currency is not Found", HttpServletResponse.SC_NOT_FOUND, resp);
+            log.error(ErrorType.CURRENCY_NOT_FOUND.getMessage(), e);
+            JsonUtil.sendError(ErrorType.CURRENCY_NOT_FOUND.getMessage(), HttpServletResponse.SC_NOT_FOUND, resp);
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            String name = req.getParameter("name");
-            String code = req.getParameter("code");
-            String sign = req.getParameter("sign");
+            String name = req.getParameter(PARAM_NAME);
+            String code = req.getParameter(PARAM_CODE);
+            String sign = req.getParameter(PARAM_SIGN);
 
-            ValidationUtils.validateRequiredParameter(name, "name");
-            ValidationUtils.validateRequiredParameter(code, "code");
+            ValidationUtils.validateRequiredParameter(name, PARAM_NAME);
+            ValidationUtils.validateCurrencyCode(code);
 
             CurrencyRequestDto currencyRequest = CurrencyRequestDto.builder()
                     .code(code.trim().toUpperCase())
@@ -68,15 +71,17 @@ public class CurrencyServlet extends HttpServlet {
             CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
             JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
 
-        }catch (DataAccessException e){
-            log.error("Service temporarily unavailable");
-            JsonUtil.sendError("Service temporarily unavailable", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,resp);
-        }catch (UniqueDataException e){
-            log.warn("Currency with this code already exists.");
-            JsonUtil.sendError("Currency with this code already exists", HttpServletResponse.SC_CONFLICT, resp);
-        }catch (ValidationException e){
-            log.warn("Validation failed: {}", e.getMessage());
-            JsonUtil.sendError("Validation error", HttpServletResponse.SC_BAD_REQUEST, resp);
+        } catch (DataAccessException e) {
+            log.error(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
+            JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
+        } catch (UniqueDataException e) {
+            log.error("Currency with this code {} already exists", e.getMessage());
+            JsonUtil.sendError(ErrorType.CURRENCY_CODE_EXISTS_TEMPLATE.getMessage().formatted(e.getMessage()),
+                    HttpServletResponse.SC_CONFLICT, resp);
+        } catch (ValidationException e) {
+            log.warn(ErrorType.VALIDATION_FAILED.getMessage(), e);
+            JsonUtil.sendError(ErrorType.VALIDATION_FAILED.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
         }
     }
+
 }
