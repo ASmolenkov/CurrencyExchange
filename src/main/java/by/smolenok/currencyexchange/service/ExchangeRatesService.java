@@ -13,7 +13,6 @@ public class ExchangeRatesService {
 
     public List<ExchangeRatesResponseDto> getExchangeRates() {
         List<ExchangeRate> exchangeRates = exchangeRatesDao.findAll();
-
         List<ExchangeRatesResponseDto> exchangeRatesResponses = new ArrayList<>();
         for (ExchangeRate er: exchangeRates){
             ExchangeRatesResponseDto exchangeRatesResponseDto = ExchangeRateMapper.toResponse(er);

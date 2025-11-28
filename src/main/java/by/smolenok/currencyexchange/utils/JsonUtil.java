@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JsonUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -19,5 +21,11 @@ public class JsonUtil {
     public static void sendError(String message, int errorCode, HttpServletResponse response) throws IOException {
         ErrorApi errorApi = new ErrorApi(message);
         sendJson(errorApi, errorCode, response);
+    }
+
+    public static void sendMessage(String message, int errorCode, HttpServletResponse response) throws IOException {
+        Map<String, String> messages = new HashMap<>();
+        messages.put("message", message);
+        sendJson(messages, errorCode, response);
     }
 }

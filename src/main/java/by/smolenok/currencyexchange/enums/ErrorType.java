@@ -12,7 +12,9 @@ public enum ErrorType {
     INVALID_CREATE_CURRENCY_NO_ID("Creating currency failed, no ID obtained."),
     UNIQUE_FAILED("UNIQUE constraint failed"),
     SAVE_ERROR_CURRENCY("Error saving currency to database"),
-    ERROR_RETRIEVING_CURRENCIES("Error retrieving currencies from the database");
+    ERROR_RETRIEVING_CURRENCIES("Error retrieving currencies from the database"),
+    ERROR_RETRIEVING_EXCHANGE_RATES("Error retrieving exchange rates from the database"),
+    NO_EXCHANGE_RATES("There are no exchange rates");
 
     private final String message;
 

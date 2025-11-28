@@ -19,6 +19,7 @@ public class ExchangeRateMapper {
     }
 
     public ExchangeRate resultSetToExchangeRate(ResultSet resultSet) throws SQLException {
+
         Currency currencyBase = Currency.builder()
                 .id(resultSet.getInt("base_id"))
                 .name(resultSet.getString("base_name"))

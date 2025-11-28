@@ -1,5 +1,7 @@
 package by.smolenok.currencyexchange.dao;
 
+import by.smolenok.currencyexchange.enums.ErrorType;
+import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.mapper.ExchangeRateMapper;
 import by.smolenok.currencyexchange.model.ExchangeRate;
 import by.smolenok.currencyexchange.utils.DatabaseManager;
@@ -45,7 +47,7 @@ public class ExchangeRatesDao {
             }
             return exchangeRates;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(ErrorType.ERROR_RETRIEVING_EXCHANGE_RATES.getMessage());
         }
     }
 }
