@@ -30,9 +30,9 @@ public class ExchangeRateServlet extends HttpServlet {
             ExchangeRatesResponseDto exchangeRatesResponse = exchangeRatesService.getExchangeRatesByCode(code);
             JsonUtil.sendJson(exchangeRatesResponse, HttpServletResponse.SC_OK,resp);
         }catch (DataAccessException e){
-            JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
+            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
         }catch (ModelNotFoundException e){
-            JsonUtil.sendError(ErrorType.EXCHANGE_RATES_NOT_FOUND.getMessage(), HttpServletResponse.SC_NOT_FOUND, resp);
+            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_NOT_FOUND, resp);
         }catch (ValidationException e){
             JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
         }

@@ -82,7 +82,7 @@ public class ExchangeRatesDao {
             stmt.setString(2, targetCode);
             try(ResultSet resultSet = stmt.executeQuery()) {
                 if(!resultSet.next()){
-                    throw new ModelNotFoundException(ErrorType.EXCHANGE_RATES_NOT_FOUND.getMessage());
+                    throw new ModelNotFoundException(ErrorType.EXCHANGE_RATES_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCode, targetCode));
                 }
                 return ExchangeRateMapper.resultSetToExchangeRate(resultSet);
             }

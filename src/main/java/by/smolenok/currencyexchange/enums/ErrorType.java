@@ -7,7 +7,7 @@ public enum ErrorType {
     CURRENCY_NOT_FOUND_TEMPLATE("Currency with this code '%s' not found"),
     CURRENCY_CODE_REQUIRED("Currency code is required"),
     EXCHANGE_RATES_CODE_REQUIRED("Exchange rate code required"),
-    EXCHANGE_RATES_NOT_FOUND("Exchange rate not found for the pair"),
+    EXCHANGE_RATES_NOT_FOUND_TEMPLATE("Exchange rate not found for the pair '%s' - '%s'"),
     CURRENCY_CODE_EXISTS_TEMPLATE("Currency with this code '%s' already exists"),
     VALIDATION_FAILED("Validation error"),
     SERVICE_UNAVAILABLE("Service temporarily unavailable"),
