@@ -10,14 +10,6 @@ public class PathUtils {
         if(pathInfo == null || pathInfo.isEmpty() || "/".equals(pathInfo)){
             throw new ValidationException(ErrorType.NO_CURRENCY_PAIR.getMessage());
         }
-        String code = pathInfo.replaceAll("^/+","");
-        if(code.length() == 3){
-            ValidationUtils.validateCurrencyCode(code);
-        }else {
-            ValidationUtils.validateExchangeRatesCode(code);
-        }
-        return code.toUpperCase();
+        return pathInfo.replaceAll("^/+","").toUpperCase();
     }
-
-
 }

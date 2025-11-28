@@ -79,7 +79,7 @@ public class CurrencyDao {
             statement.setString(1, code);
             ResultSet resultSet = statement.executeQuery();
             if(!resultSet.next()){
-                throw new ModelNotFoundException(ErrorType.CURRENCY_CODE_EXISTS_TEMPLATE.getMessage().formatted(code));
+                throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage().formatted(code));
             }
             return CurrencyMapper.resultSetToCurrency(resultSet);
 

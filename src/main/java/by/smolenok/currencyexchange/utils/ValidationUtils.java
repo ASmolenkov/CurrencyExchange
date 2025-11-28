@@ -1,6 +1,7 @@
 package by.smolenok.currencyexchange.utils;
 
 
+import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.ValidationException;
 import lombok.experimental.UtilityClass;
 
@@ -9,25 +10,25 @@ public class ValidationUtils {
 
     public void validateCurrencyCode(String code) {
         if (isEmpty(code)) {
-            throw new ValidationException("Currency code is required");
+            throw new ValidationException(ErrorType.CURRENCY_CODE_REQUIRED.getMessage());
         }
         if (code.length() != 3) {
-            throw new ValidationException("Currency code must be exactly 3 characters");
+            throw new ValidationException(ErrorType.INVALID_CURRENCY_SIZE.getMessage());
         }
         if (!code.matches("[A-Za-z]{3}")) {
-            throw new ValidationException("Currency code must contain only letters");
+            throw new ValidationException(ErrorType.INVALID_CURRENCY_CODE.getMessage());
         }
     }
 
     public void validateExchangeRatesCode(String code) {
         if (isEmpty(code)) {
-            throw new ValidationException("Currency code is required");
+            throw new ValidationException(ErrorType.EXCHANGE_RATES_CODE_REQUIRED.getMessage());
         }
         if (code.length() != 6) {
-            throw new ValidationException("Currency code must be exactly 6 characters");
+            throw new ValidationException(ErrorType.INVALID_EXCHANGE_RATES_SIZE.getMessage());
         }
         if (!code.matches("[A-Za-z]{6}")) {
-            throw new ValidationException("Currency code must contain only letters");
+            throw new ValidationException(ErrorType.INVALID_EXCHANGE_RATES_CODE.getMessage());
         }
     }
 

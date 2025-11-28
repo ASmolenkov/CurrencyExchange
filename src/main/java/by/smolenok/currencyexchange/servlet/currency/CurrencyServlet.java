@@ -1,4 +1,4 @@
-package by.smolenok.currencyexchange.servlet;
+package by.smolenok.currencyexchange.servlet.currency;
 
 import by.smolenok.currencyexchange.dto.request.CurrencyRequestDto;
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-@WebServlet("/currencies/*")
+@WebServlet("/currency/*")
 public class CurrencyServlet extends HttpServlet {
 
     private static final String PARAM_NAME = "name";
@@ -32,11 +32,7 @@ public class CurrencyServlet extends HttpServlet {
         try {
             String path = req.getPathInfo();
             String codeCurrency = PathUtils.extractCurrencyCode(path);
-            if (ValidationUtils.isEmpty(codeCurrency)) {
-                List<CurrencyResponseDto> currencyResponses = currencyService.getCurrencies();
-                JsonUtil.sendJson(currencyResponses, HttpServletResponse.SC_OK, resp);
-                return;
-            }
+            ValidationUtils.validateCurrencyCode(codeCurrency);
             CurrencyResponseDto currencyResponse = currencyService.getCurrency(codeCurrency);
             JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_OK, resp);
         } catch (DataAccessException e) {
@@ -44,10 +40,10 @@ public class CurrencyServlet extends HttpServlet {
             JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
         } catch (ValidationException e) {
             log.error(ErrorType.INVALID_CURRENCY_CODE.getMessage(), e);
-            JsonUtil.sendError(ErrorType.INVALID_CURRENCY_CODE.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
+            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
         } catch (ModelNotFoundException e) {
-            log.error(ErrorType.CURRENCY_NOT_FOUND.getMessage(), e);
-            JsonUtil.sendError(ErrorType.CURRENCY_NOT_FOUND.getMessage(), HttpServletResponse.SC_NOT_FOUND, resp);
+            log.error(e.getMessage(), e);
+            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_NOT_FOUND, resp);
         }
     }
 

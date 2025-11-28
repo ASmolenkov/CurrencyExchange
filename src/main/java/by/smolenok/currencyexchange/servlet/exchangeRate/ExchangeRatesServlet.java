@@ -25,6 +25,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             List<ExchangeRatesResponseDto> exchangeRates = exchangeRatesService.getExchangeRates();
             if(exchangeRates.isEmpty()){
                 JsonUtil.sendMessage(ErrorType.NO_EXCHANGE_RATES.getMessage(),HttpServletResponse.SC_OK, resp);
+                return;
             }
             JsonUtil.sendJson(exchangeRates, HttpServletResponse.SC_OK, resp);
         }catch (DataAccessException e){

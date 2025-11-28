@@ -8,6 +8,7 @@ import by.smolenok.currencyexchange.exeptions.ValidationException;
 import by.smolenok.currencyexchange.service.ExchangeRatesService;
 import by.smolenok.currencyexchange.utils.JsonUtil;
 import by.smolenok.currencyexchange.utils.PathUtils;
+import by.smolenok.currencyexchange.utils.ValidationUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,7 +26,7 @@ public class ExchangeRateServlet extends HttpServlet {
         try {
             String path = req.getPathInfo();
             String code = PathUtils.extractCurrencyCode(path);
-            log.info("Path = {}", code);
+            ValidationUtils.validateExchangeRatesCode(code);
             ExchangeRatesResponseDto exchangeRatesResponse = exchangeRatesService.getExchangeRatesByCode(code);
             JsonUtil.sendJson(exchangeRatesResponse, HttpServletResponse.SC_OK,resp);
         }catch (DataAccessException e){
