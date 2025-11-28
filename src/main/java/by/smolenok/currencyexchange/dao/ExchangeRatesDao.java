@@ -90,4 +90,22 @@ public class ExchangeRatesDao {
             throw new DataAccessException(ErrorType.ERROR_RETRIEVING_EXCHANGE_RATES.getMessage());
         }
     }
+
+    public boolean existsByCode(String baseCode, String targetCode) {
+        try(Connection connection = DatabaseManager.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
+            stmt.setString(1, baseCode);
+            stmt.setString(2, targetCode);
+            try(ResultSet resultSet = stmt.executeQuery()) {
+                return resultSet.next();
+            }
+        }catch (SQLException e){
+            throw new DataAccessException(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
+        }
+
+    }
+
+    public ExchangeRate save(ExchangeRate exchangeRate) {
+        return null;
+    }
 }

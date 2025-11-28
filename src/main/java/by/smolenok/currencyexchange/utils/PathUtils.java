@@ -4,6 +4,8 @@ import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.ValidationException;
 import lombok.experimental.UtilityClass;
 
+import java.math.BigDecimal;
+
 @UtilityClass
 public class PathUtils {
     public String extractCurrencyCode(String pathInfo) {
@@ -11,5 +13,9 @@ public class PathUtils {
             throw new ValidationException(ErrorType.NO_CURRENCY_PAIR.getMessage());
         }
         return pathInfo.replaceAll("^/+","").toUpperCase();
+    }
+
+    public BigDecimal extractRate(String rate){
+        return new BigDecimal(rate);
     }
 }

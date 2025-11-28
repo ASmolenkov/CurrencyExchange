@@ -2,8 +2,12 @@ package by.smolenok.currencyexchange.utils;
 
 
 import by.smolenok.currencyexchange.enums.ErrorType;
+import by.smolenok.currencyexchange.exeptions.rate.NegativeRateException;
 import by.smolenok.currencyexchange.exeptions.ValidationException;
+import by.smolenok.currencyexchange.exeptions.rate.ValidationRateException;
 import lombok.experimental.UtilityClass;
+
+import java.math.BigDecimal;
 
 @UtilityClass
 public class ValidationUtils {
@@ -32,12 +36,24 @@ public class ValidationUtils {
         }
     }
 
+    public void validateRate(String rate) {
+       try {
+           BigDecimal result = new BigDecimal(rate);
+           if (result.compareTo(BigDecimal.ZERO) < 0) {
+               throw new NegativeRateException("Rate cannot be less than 0");
+           }
+       }catch (NumberFormatException e){
+           throw new ValidationRateException("Rate должен быть числом");
+       }
+
+    }
+
     public boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
     }
 
     public void validateRequiredParameter(String value, String paramName) throws ValidationException {
-        if(isEmpty(value)){
+        if (isEmpty(value)) {
             throw new ValidationException("Parameter '" + paramName + "' is required");
         }
     }

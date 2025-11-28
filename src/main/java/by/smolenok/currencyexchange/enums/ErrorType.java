@@ -9,6 +9,7 @@ public enum ErrorType {
     EXCHANGE_RATES_CODE_REQUIRED("Exchange rate code required"),
     EXCHANGE_RATES_NOT_FOUND_TEMPLATE("Exchange rate not found for the pair '%s' - '%s'"),
     CURRENCY_CODE_EXISTS_TEMPLATE("Currency with this code '%s' already exists"),
+    EXCHANGE_RATES_EXISTS_TEMPLATE(" Exchange rates with this code '%s' - '%s' already exists"),
     VALIDATION_FAILED("Validation error"),
     SERVICE_UNAVAILABLE("Service temporarily unavailable"),
     INVALID_CURRENCY_CODE("Invalid currency code format, required format is three English letters"),
