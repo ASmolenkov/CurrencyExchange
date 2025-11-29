@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @WebServlet("/currency/*")
@@ -39,7 +38,7 @@ public class CurrencyServlet extends HttpServlet {
             log.error(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
             JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
         } catch (ValidationException e) {
-            log.error(ErrorType.INVALID_CURRENCY_CODE.getMessage(), e);
+            log.error(ErrorType.INVALID_CURRENCY_CODE_TEMPLATE.getMessage(), e);
             JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
         } catch (ModelNotFoundException e) {
             log.error(e.getMessage(), e);

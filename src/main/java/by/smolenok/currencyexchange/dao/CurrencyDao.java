@@ -33,6 +33,12 @@ public class CurrencyDao {
             stmt.setString(1, currency.getCode());
             stmt.setString(2, currency.getName());
             stmt.setString(3, currency.getSign());
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DataAccessException("Expected 1 row to be inserted, but 0 affected.");
+            }
+
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);

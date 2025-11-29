@@ -12,10 +12,6 @@ public class PathUtils {
         if(pathInfo == null || pathInfo.isEmpty() || "/".equals(pathInfo)){
             throw new ValidationException(ErrorType.NO_CURRENCY_PAIR.getMessage());
         }
-        return pathInfo.replaceAll("^/+","").toUpperCase();
-    }
-
-    public BigDecimal extractRate(String rate){
-        return new BigDecimal(rate);
+        return ValidationUtils.parseCurrencyCode(pathInfo);
     }
 }

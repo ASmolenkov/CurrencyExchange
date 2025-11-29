@@ -3,15 +3,13 @@ package by.smolenok.currencyexchange.dao;
 import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
+import by.smolenok.currencyexchange.exeptions.UniqueDataException;
 import by.smolenok.currencyexchange.mapper.ExchangeRateMapper;
 import by.smolenok.currencyexchange.model.ExchangeRate;
 import by.smolenok.currencyexchange.utils.DatabaseManager;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,15 +55,23 @@ public class ExchangeRatesDao {
             WHERE cb.code = ? AND ct.code = ?;
             """;
 
+    private static final String SQL_INSERT = """
+            INSERT INTO exchange_rates(base_currency_id, target_currency_id, rate)
+            VALUES ((SELECT (currencies.id)
+                     FROM currencies
+                     WHERE code = ?), (SELECT (currencies.id)
+                                           FROM currencies
+                                           WHERE code = ?), ?)
+            """;
 
 
-    public List<ExchangeRate> findAll(){
-        try(Connection connection = DatabaseManager.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(SQL_FIND_ALL);
-            ResultSet resultSet = stmt.executeQuery()) {
+    public List<ExchangeRate> findAll() {
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SQL_FIND_ALL);
+             ResultSet resultSet = stmt.executeQuery()) {
 
             List<ExchangeRate> exchangeRates = new ArrayList<>();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 ExchangeRate exchangeRate = ExchangeRateMapper.resultSetToExchangeRate(resultSet);
                 exchangeRates.add(exchangeRate);
             }
@@ -75,13 +81,13 @@ public class ExchangeRatesDao {
         }
     }
 
-    public ExchangeRate findByCode(String baseCode, String targetCode){
-        try(Connection connection = DatabaseManager.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
+    public ExchangeRate findByCode(String baseCode, String targetCode) {
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
             stmt.setString(1, baseCode);
             stmt.setString(2, targetCode);
-            try(ResultSet resultSet = stmt.executeQuery()) {
-                if(!resultSet.next()){
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                if (!resultSet.next()) {
                     throw new ModelNotFoundException(ErrorType.EXCHANGE_RATES_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCode, targetCode));
                 }
                 return ExchangeRateMapper.resultSetToExchangeRate(resultSet);
@@ -92,20 +98,54 @@ public class ExchangeRatesDao {
     }
 
     public boolean existsByCode(String baseCode, String targetCode) {
-        try(Connection connection = DatabaseManager.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
             stmt.setString(1, baseCode);
             stmt.setString(2, targetCode);
-            try(ResultSet resultSet = stmt.executeQuery()) {
+            try (ResultSet resultSet = stmt.executeQuery()) {
                 return resultSet.next();
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DataAccessException(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
         }
 
     }
 
     public ExchangeRate save(ExchangeRate exchangeRate) {
-        return null;
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, exchangeRate.getBaseCurrency().getCode());
+            stmt.setString(2, exchangeRate.getTargetCurrency().getCode());
+            stmt.setBigDecimal(3, exchangeRate.getRate());
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DataAccessException("Expected 1 row to be inserted, but 0 affected.");
+            }
+
+            try (ResultSet resultSet = stmt.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    int id = resultSet.getInt(1);
+                    return ExchangeRate.builder()
+                            .id(id)
+                            .baseCurrency(exchangeRate.getBaseCurrency())
+                            .targetCurrency(exchangeRate.getTargetCurrency())
+                            .rate(exchangeRate.getRate())
+                            .build();
+                } else {
+                    log.error("Creating exchange rate failed, no ID obtained.");
+                    throw new DataAccessException(ErrorType.INVALID_EXCHANGE_RATE_NO_ID.getMessage());
+                }
+            }
+        } catch (SQLException e) {
+            if (e.getMessage() != null && e.getMessage().contains(ErrorType.UNIQUE_FAILED.getMessage())) {
+                String baseCurrencyCode = exchangeRate.getBaseCurrency().getCode();
+                String targetCurrencyCode = exchangeRate.getTargetCurrency().getCode();
+                throw new UniqueDataException(ErrorType.EXCHANGE_RATES_EXISTS_TEMPLATE.getMessage()
+                        .formatted(baseCurrencyCode, targetCurrencyCode));
+            }else {
+                throw new DataAccessException(ErrorType.SAVE_ERROR_EXCHANGE_RATES.getMessage());
+            }
+        }
     }
 }

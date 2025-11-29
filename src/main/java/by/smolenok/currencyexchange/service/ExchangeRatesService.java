@@ -13,7 +13,6 @@ import by.smolenok.currencyexchange.model.Currency;
 import by.smolenok.currencyexchange.model.ExchangeRate;
 import lombok.extern.slf4j.Slf4j;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 @Slf4j
@@ -41,23 +40,33 @@ public class ExchangeRatesService {
 
     //TODO Нужно придумать как извлекать Currency для отправки в Дао
     public ExchangeRatesResponseDto createExchangeRates(ExchangeRateRequestDto rateRequestDto) {
-        String baseCurrencyCode = rateRequestDto.baseCurrency().code();
-        String targetCurrencyCode = rateRequestDto.targetCurrency().code();
+
+        String baseCurrencyCode = rateRequestDto.baseCurrencyCode();
+        String targetCurrencyCode = rateRequestDto.targetCurrencyCode();
+
         if(exchangeRatesDao.existsByCode(baseCurrencyCode, targetCurrencyCode)){
             throw new UniqueDataException(ErrorType.EXCHANGE_RATES_EXISTS_TEMPLATE.getMessage()
                     .formatted(baseCurrencyCode, targetCurrencyCode));
         }
-        if(!currencyDao.existsByCode(baseCurrencyCode)){
-            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCurrencyCode));
+        Currency baseCurrency;
+        try {
+            baseCurrency = currencyDao.findByCode(baseCurrencyCode);
+        } catch (ModelNotFoundException e) {
+            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
+                    .formatted(baseCurrencyCode));
         }
-        if(!currencyDao.existsByCode(targetCurrencyCode)){
-            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage().formatted(targetCurrencyCode));
+        Currency targetCurrency;
+        try {
+            targetCurrency = currencyDao.findByCode(targetCurrencyCode);
+        } catch (ModelNotFoundException e) {
+            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
+                    .formatted(targetCurrencyCode));
         }
-        Currency baseCurrency = Currency.builder().code(baseCurrencyCode).build();
-        Currency targetCurrency = Currency.builder().code(targetCurrencyCode).build();
+
         ExchangeRate exchangeRate = ExchangeRate.builder()
                 .baseCurrency(baseCurrency)
                 .targetCurrency(targetCurrency)
+                .rate(rateRequestDto.rate())
                 .build();
         ExchangeRate updateRate = exchangeRatesDao.save(exchangeRate);
         return ExchangeRateMapper.toResponse(updateRate);
