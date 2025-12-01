@@ -14,10 +14,10 @@ public class ValidationUtils {
 
     public void validateCurrencyCode(String code) {
         if (isEmpty(code)) {
-            throw new ValidationCodeException(ErrorType.CURRENCY_CODE_REQUIRED.getMessage());
+            throw new ValidationCodeException(ErrorType.CURRENCY_CODE_MISSING.getMessage());
         }
         if (code.length() != 3) {
-            throw new ValidationCodeException(ErrorType.INVALID_CURRENCY_SIZE_TEMPLATE.getMessage().formatted(code));
+            throw new ValidationCodeException(ErrorType.INVALID_CURRENCY_LENGTH_TEMPLATE.getMessage().formatted(code));
         }
         if (!code.matches("[A-Za-z]{3}")) {
             throw new ValidationCodeException(ErrorType.INVALID_CURRENCY_CODE_TEMPLATE.getMessage().formatted(code));
@@ -29,33 +29,33 @@ public class ValidationUtils {
         validateCurrencyCode(targetCode);
 
         if(baseCode.equalsIgnoreCase(targetCode)){
-            throw new ValidationCodeException("Коды валют не должны быть одинаковыми! (Ваш код: '%s' - '%s')".formatted(baseCode, targetCode));
+            throw new ValidationCodeException(ErrorType.SAME_CURRENCY_PAIRS_TEMPLATE.getMessage().formatted(baseCode, targetCode));
         }
     }
 
     public void validateExchangeRatesCode(String code) {
         if (isEmpty(code)) {
-            throw new ValidationCodeException(ErrorType.EXCHANGE_RATES_CODE_REQUIRED.getMessage());
+            throw new ValidationCodeException(ErrorType.EXCHANGE_RATE_PAIR_MISSING.getMessage());
         }
         if (code.length() != 6) {
-            throw new ValidationCodeException(ErrorType.INVALID_EXCHANGE_RATES_SIZE.getMessage());
+            throw new ValidationCodeException(ErrorType.EXCHANGE_RATE_PAIR_LENGTH_INVALID.getMessage().formatted(code));
         }
         if (!code.matches("[A-Za-z]{6}")) {
-            throw new ValidationCodeException(ErrorType.INVALID_EXCHANGE_RATES_CODE.getMessage());
+            throw new ValidationCodeException(ErrorType.EXCHANGE_RATE_PAIR_LENGTH_INVALID.getMessage());
         }
     }
 
     public void validateRate(String rate) {
         if(isEmpty(rate)){
-            throw new ValidationRateException("Exchange rate cannot be empty");
+            throw new ValidationRateException(ErrorType.EXCHANGE_RATE_NOT_EMPTY.getMessage());
         }
         try {
             BigDecimal result = new BigDecimal(rate);
             if (result.compareTo(BigDecimal.ZERO) < 0) {
-                throw new ValidationRateException("Exchange rate cannot be less than 0");
+                throw new ValidationRateException(ErrorType.EXCHANGE_RATE_BELOW_ZERO.getMessage());
             }
         } catch (NumberFormatException e) {
-            throw new ValidationRateException("Exchange rate должен быть числом");
+            throw new ValidationRateException(ErrorType.EXCHANGE_RATE_MUST_BE_NUMBER.getMessage());
         }
     }
 
@@ -65,7 +65,7 @@ public class ValidationUtils {
 
     public void validateRequiredParameter(String value, String paramName) throws ValidationException {
         if (isEmpty(value)) {
-            throw new ValidationException("Parameter '" + paramName + "' is required");
+            throw new ValidationException(ErrorType.PARAMETER_REQUIRED_TEMPLATE.getMessage().formatted(paramName));
         }
     }
 

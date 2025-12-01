@@ -43,7 +43,7 @@ public class ExceptionHandlerFilter implements Filter {
             message = e.getMessage();
         }else {
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            message = ErrorType.SERVICE_UNAVAILABLE.getMessage();
+            message = ErrorType.DATABASE_ERROR.getMessage();
         }
         log.error(e.getMessage(), e);
         JsonUtil.sendError(message, status, response);

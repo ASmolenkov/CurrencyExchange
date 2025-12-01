@@ -42,7 +42,7 @@ public class ExchangeRatesService {
         String targetCurrencyCode = rateRequestDto.targetCurrencyCode();
 
         if(exchangeRatesDao.existsByCode(baseCurrencyCode, targetCurrencyCode)){
-            throw new UniqueDataException(ErrorType.EXCHANGE_RATES_EXISTS_TEMPLATE.getMessage()
+            throw new UniqueDataException(ErrorType.EXCHANGE_RATE_ALREADY_EXISTS.getMessage()
                     .formatted(baseCurrencyCode, targetCurrencyCode));
         }
         Currency baseCurrency;

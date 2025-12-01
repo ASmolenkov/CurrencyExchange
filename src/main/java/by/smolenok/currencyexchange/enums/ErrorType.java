@@ -5,27 +5,35 @@ import lombok.Getter;
 @Getter
 public enum ErrorType {
     CURRENCY_NOT_FOUND_TEMPLATE("Currency with this code '%s' not found"),
-    CURRENCY_CODE_REQUIRED("Currency code is required"),
-    EXCHANGE_RATES_CODE_REQUIRED("Exchange rate code required"),
-    EXCHANGE_RATES_NOT_FOUND_TEMPLATE("Exchange rate not found for the pair '%s' - '%s'"),
-    CURRENCY_CODE_EXISTS_TEMPLATE("Currency with this code '%s' already exists"),
-    EXCHANGE_RATES_EXISTS_TEMPLATE("Exchange rates with this code '%s' - '%s' already exists"),
-    VALIDATION_FAILED("Validation error"),
-    SERVICE_UNAVAILABLE("Service temporarily unavailable"),
-    INVALID_CURRENCY_CODE_TEMPLATE("Invalid currency code format, required format is three English letters (Your code: '%s')"),
-    INVALID_EXCHANGE_RATES_CODE("Invalid exchange rates code format, required format is six English letters"),
-    INVALID_EXCHANGE_RATES_SIZE("Exchange rates code must be exactly 6 characters"),
-    INVALID_CURRENCY_SIZE_TEMPLATE("The currency code must be exactly 3 characters long (Your code: '%s')"),
+    CURRENCY_ALREADY_EXISTS_TEMPLATE("Currency with this code '%s' already exists"),
+    INVALID_CURRENCY_CODE_TEMPLATE("Currency code must contain 3 uppercase Latin letters: '%s'"),
+    INVALID_CURRENCY_LENGTH_TEMPLATE("The currency code must be exactly 3 characters long (Your code: '%s')"),
+    SAME_CURRENCY_PAIRS_TEMPLATE("Currency pair codes must not be the same. (Your code: '%s' - '%s')"),
+    CURRENCY_CODE_MISSING("Currency code is required"),
     INVALID_CREATE_CURRENCY_NO_ID("Creating currency failed, no ID obtained."),
-    INVALID_EXCHANGE_RATE_NO_ID("Creating exchange rate failed, no ID obtained."),
-    UNIQUE_FAILED("UNIQUE constraint failed"),
-    SAVE_ERROR_CURRENCY("Error saving currency to database"),
-    SAVE_ERROR_EXCHANGE_RATES("Error saving exchange rates to database"),
-    ERROR_RETRIEVING_CURRENCIES("Error retrieving currencies from the database"),
+    CURRENCY_SAVE_FAILED("Error saving currency to database"),
+    CURRENCIES_RETRIEVAL_FAILED("Error retrieving currencies from the database"),
+    NO_CURRENCY("There are no currency"),
+    NO_CURRENCY_PAIR("Currency pair codes are missing in the address"),
+
+    EXCHANGE_RATE_NOT_FOUND_TEMPLATE("Exchange rate not found for the pair '%s' - '%s'"),
+    EXCHANGE_RATE_ALREADY_EXISTS("Exchange rates with this code '%s' - '%s' already exists"),
+    EXCHANGE_RATE_PAIR_LENGTH_INVALID("Currency pair must be 6 Latin letters (e.g. USDRUB), got: '%s'"),
+    INCORRECT_EXCHANGE_RATE_NO_ID("Creating exchange rate failed, no ID obtained."),
+    EXCHANGE_RATE_SAVE_FAILED("Error saving exchange rates to database"),
     ERROR_RETRIEVING_EXCHANGE_RATES("Error retrieving exchange rates from the database"),
     NO_EXCHANGE_RATES("There are no exchange rates"),
-    NO_CURRENCY("There are no currency"),
-    NO_CURRENCY_PAIR("Currency pair codes are missing in the address");
+    EXCHANGE_RATE_PAIR_MISSING("Exchange rate code pair required"),
+    EXCHANGE_RATE_NOT_EMPTY("Exchange rate cannot be empty"),
+    EXCHANGE_RATE_BELOW_ZERO("Exchange rate cannot be less than 0"),
+    EXCHANGE_RATE_MUST_BE_NUMBER("Exchange rate must be a number"),
+
+    PARAMETER_REQUIRED_TEMPLATE("Parameter '%s' is required"),
+
+
+    DATABASE_ERROR("Service temporarily unavailable"),
+    DUPLICATE_RECORD("UNIQUE constraint failed");
+
 
     private final String message;
 

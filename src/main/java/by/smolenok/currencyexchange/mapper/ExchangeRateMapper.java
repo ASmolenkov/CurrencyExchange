@@ -12,6 +12,18 @@ import java.sql.SQLException;
 @UtilityClass
 public class ExchangeRateMapper {
 
+
+    private static final String TARGET = "target";
+    private static final String BASE = "base";
+
+    private static final String COLUMN_LABEL_ID = "%s_id";
+    private static final String COLUMN_LABEL_NAME = "%s_name";
+    private static final String COLUMN_LABEL_CODE = "%s_code";
+    private static final String COLUMN_LABEL_SIGN = "%s_sign";
+
+    private static final String COLUMN_LABEL_RATE_ID = "rate_id";
+    private static final String COLUMN_LABEL_RATE = "rate";
+
     public ExchangeRatesResponseDto toResponse(ExchangeRate exchangeRate){
         CurrencyResponseDto baseCurrencyResponse = CurrencyMapper.toResponse(exchangeRate.getBaseCurrency());
         CurrencyResponseDto targetCurrencyResponse = CurrencyMapper.toResponse(exchangeRate.getTargetCurrency());
@@ -21,24 +33,24 @@ public class ExchangeRateMapper {
     public ExchangeRate resultSetToExchangeRate(ResultSet resultSet) throws SQLException {
 
         Currency currencyBase = Currency.builder()
-                .id(resultSet.getInt("base_id"))
-                .name(resultSet.getString("base_name"))
-                .code(resultSet.getString("base_code"))
-                .sign(resultSet.getString("base_sign"))
+                .id(resultSet.getInt(COLUMN_LABEL_ID.formatted(BASE)))
+                .name(resultSet.getString(COLUMN_LABEL_NAME.formatted(BASE)))
+                .code(resultSet.getString(COLUMN_LABEL_CODE.formatted(BASE)))
+                .sign(resultSet.getString(COLUMN_LABEL_SIGN.formatted(BASE)))
                 .build();
 
         Currency currencyTarget = Currency.builder()
-                .id(resultSet.getInt("target_id"))
-                .name(resultSet.getString("target_name"))
-                .code(resultSet.getString("target_code"))
-                .sign(resultSet.getString("target_sign"))
+                .id(resultSet.getInt(COLUMN_LABEL_ID.formatted(TARGET)))
+                .name(resultSet.getString(COLUMN_LABEL_NAME.formatted(TARGET)))
+                .code(resultSet.getString(COLUMN_LABEL_CODE.formatted(TARGET)))
+                .sign(resultSet.getString(COLUMN_LABEL_SIGN.formatted(TARGET)))
                 .build();
 
         return ExchangeRate.builder()
-                .id(resultSet.getInt("rate_id"))
+                .id(resultSet.getInt(COLUMN_LABEL_RATE_ID))
                 .baseCurrency(currencyBase)
                 .targetCurrency(currencyTarget)
-                .rate(resultSet.getBigDecimal("rate"))
+                .rate(resultSet.getBigDecimal(COLUMN_LABEL_RATE))
                 .build();
     }
 }

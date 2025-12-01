@@ -95,7 +95,7 @@ public class ExchangeRatesDao {
             stmt.setString(2, targetCode);
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (!resultSet.next()) {
-                    throw new ModelNotFoundException(ErrorType.EXCHANGE_RATES_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCode, targetCode));
+                    throw new ModelNotFoundException(ErrorType.EXCHANGE_RATE_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCode, targetCode));
                 }
                 return ExchangeRateMapper.resultSetToExchangeRate(resultSet);
             }
@@ -113,7 +113,7 @@ public class ExchangeRatesDao {
                 return resultSet.next();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
+            throw new DataAccessException(ErrorType.DATABASE_ERROR.getMessage(), e);
         }
 
     }
@@ -141,17 +141,17 @@ public class ExchangeRatesDao {
                             .build();
                 } else {
                     log.error("Creating exchange rate failed, no ID obtained.");
-                    throw new DataAccessException(ErrorType.INVALID_EXCHANGE_RATE_NO_ID.getMessage());
+                    throw new DataAccessException(ErrorType.INCORRECT_EXCHANGE_RATE_NO_ID.getMessage());
                 }
             }
         } catch (SQLException e) {
-            if (e.getMessage() != null && e.getMessage().contains(ErrorType.UNIQUE_FAILED.getMessage())) {
+            if (e.getMessage() != null && e.getMessage().contains(ErrorType.DUPLICATE_RECORD.getMessage())) {
                 String baseCurrencyCode = exchangeRate.getBaseCurrency().getCode();
                 String targetCurrencyCode = exchangeRate.getTargetCurrency().getCode();
-                throw new UniqueDataException(ErrorType.EXCHANGE_RATES_EXISTS_TEMPLATE.getMessage()
+                throw new UniqueDataException(ErrorType.EXCHANGE_RATE_ALREADY_EXISTS.getMessage()
                         .formatted(baseCurrencyCode, targetCurrencyCode));
             }else {
-                throw new DataAccessException(ErrorType.SAVE_ERROR_EXCHANGE_RATES.getMessage());
+                throw new DataAccessException(ErrorType.EXCHANGE_RATE_SAVE_FAILED.getMessage());
             }
         }
     }
@@ -167,13 +167,13 @@ public class ExchangeRatesDao {
             int affectedRows = stmt.executeUpdate();
             if(affectedRows == 0){
                 throw new ModelNotFoundException(
-                        ErrorType.EXCHANGE_RATES_NOT_FOUND_TEMPLATE.getMessage()
+                        ErrorType.EXCHANGE_RATE_NOT_FOUND_TEMPLATE.getMessage()
                                 .formatted(baseCode, targetCode)
                 );
             }
             return updated;
         } catch (SQLException e) {
-            throw new DataAccessException(ErrorType.SERVICE_UNAVAILABLE.getMessage());
+            throw new DataAccessException(ErrorType.DATABASE_ERROR.getMessage());
         }
     }
 }
