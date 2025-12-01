@@ -64,6 +64,13 @@ public class ExchangeRatesDao {
                                            WHERE code = ?), ?)
             """;
 
+    private static final String SQL_UPDATE = """
+            UPDATE exchange_rates
+            SET rate = ?
+            WHERE base_currency_id = (SELECT (id) FROM currencies WHERE code = ?)
+              AND target_currency_id = (SELECT (id) FROM currencies WHERE code = ?);
+            """;
+
 
     public List<ExchangeRate> findAll() {
         try (Connection connection = DatabaseManager.getConnection();
@@ -146,6 +153,27 @@ public class ExchangeRatesDao {
             }else {
                 throw new DataAccessException(ErrorType.SAVE_ERROR_EXCHANGE_RATES.getMessage());
             }
+        }
+    }
+
+    public ExchangeRate update(ExchangeRate updated) {
+        String baseCode = updated.getBaseCurrency().getCode();
+        String targetCode = updated.getTargetCurrency().getCode();
+        try(Connection connection = DatabaseManager.getConnection();
+        PreparedStatement stmt = connection.prepareStatement(SQL_UPDATE)) {
+            stmt.setBigDecimal(1, updated.getRate());
+            stmt.setString(2, baseCode);
+            stmt.setString(3, targetCode);
+            int affectedRows = stmt.executeUpdate();
+            if(affectedRows == 0){
+                throw new ModelNotFoundException(
+                        ErrorType.EXCHANGE_RATES_NOT_FOUND_TEMPLATE.getMessage()
+                                .formatted(baseCode, targetCode)
+                );
+            }
+            return updated;
+        } catch (SQLException e) {
+            throw new DataAccessException(ErrorType.SERVICE_UNAVAILABLE.getMessage());
         }
     }
 }

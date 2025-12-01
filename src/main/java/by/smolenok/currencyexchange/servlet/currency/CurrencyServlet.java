@@ -28,51 +28,28 @@ public class CurrencyServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            String path = req.getPathInfo();
-            String codeCurrency = PathUtils.extractCurrencyCode(path);
-            ValidationUtils.validateCurrencyCode(codeCurrency);
-            CurrencyResponseDto currencyResponse = currencyService.getCurrency(codeCurrency);
-            JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_OK, resp);
-        } catch (DataAccessException e) {
-            log.error(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
-            JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
-        } catch (ValidationException e) {
-            log.error(ErrorType.INVALID_CURRENCY_CODE_TEMPLATE.getMessage(), e);
-            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
-        } catch (ModelNotFoundException e) {
-            log.error(e.getMessage(), e);
-            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_NOT_FOUND, resp);
-        }
+
+        String path = req.getPathInfo();
+        String codeCurrency = PathUtils.extractCurrencyCode(path);
+        ValidationUtils.validateCurrencyCode(codeCurrency);
+        CurrencyResponseDto currencyResponse = currencyService.getCurrency(codeCurrency);
+        JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_OK, resp);
+
     }
 
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            String name = req.getParameter(PARAM_NAME);
-            String code = req.getParameter(PARAM_CODE);
-            String sign = req.getParameter(PARAM_SIGN);
+        String name = req.getParameter(PARAM_NAME);
+        String code = req.getParameter(PARAM_CODE);
+        String sign = req.getParameter(PARAM_SIGN);
 
-            ValidationUtils.validateRequiredParameter(name, PARAM_NAME);
-            ValidationUtils.validateCurrencyCode(code);
+        ValidationUtils.validateRequiredParameter(name, PARAM_NAME);
+        ValidationUtils.validateCurrencyCode(code);
 
-            CurrencyRequestDto currencyRequest = CurrencyRequestDto.of(name, code, sign);
+        CurrencyRequestDto currencyRequest = CurrencyRequestDto.of(name, code, sign);
 
-            CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
-            JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
-
-        } catch (DataAccessException e) {
-            log.error(ErrorType.SERVICE_UNAVAILABLE.getMessage(), e);
-            JsonUtil.sendError(ErrorType.SERVICE_UNAVAILABLE.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
-        } catch (UniqueDataException e) {
-            log.error("Currency with this code {} already exists", e.getMessage());
-            JsonUtil.sendError(ErrorType.CURRENCY_CODE_EXISTS_TEMPLATE.getMessage().formatted(e.getMessage()),
-                    HttpServletResponse.SC_CONFLICT, resp);
-        } catch (ValidationException e) {
-            log.warn(ErrorType.VALIDATION_FAILED.getMessage(), e);
-            JsonUtil.sendError(ErrorType.VALIDATION_FAILED.getMessage(), HttpServletResponse.SC_BAD_REQUEST, resp);
-        }
+        CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
+        JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
     }
-
 }

@@ -30,17 +30,14 @@ public class ExchangeRatesService {
         return exchangeRatesResponses;
     }
 
-    public ExchangeRatesResponseDto getExchangeRatesByCode(String code) throws DataAccessException, ModelNotFoundException {
-        String baseCode = code.substring(0, 3);
-        String targetCode = code.substring(3);
+    public ExchangeRatesResponseDto getExchangeRatesByCode(String baseCode, String targetCode) throws DataAccessException, ModelNotFoundException {
         log.info("Base Code = {}, Target Code = {}", baseCode, targetCode);
         ExchangeRate exchangeRate = exchangeRatesDao.findByCode(baseCode,targetCode);
         return ExchangeRateMapper.toResponse(exchangeRate);
     }
 
-    //TODO Нужно придумать как извлекать Currency для отправки в Дао
-    public ExchangeRatesResponseDto createExchangeRates(ExchangeRateRequestDto rateRequestDto) {
 
+    public ExchangeRatesResponseDto createExchangeRates(ExchangeRateRequestDto rateRequestDto) {
         String baseCurrencyCode = rateRequestDto.baseCurrencyCode();
         String targetCurrencyCode = rateRequestDto.targetCurrencyCode();
 
@@ -74,4 +71,11 @@ public class ExchangeRatesService {
     }
 
 
+    public ExchangeRatesResponseDto updateExchangeRate(ExchangeRateRequestDto exchangeRate) {
+        ExchangeRate existing = exchangeRatesDao.findByCode(exchangeRate.baseCurrencyCode(), exchangeRate.targetCurrencyCode());
+        ExchangeRate updated = existing.withRate(exchangeRate.rate());
+        ExchangeRate saved = exchangeRatesDao.update(updated);
+        return ExchangeRateMapper.toResponse(saved);
+
+    }
 }

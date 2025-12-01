@@ -20,16 +20,13 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            List<CurrencyResponseDto> currencyResponses = currencyService.getCurrencies();
-            if(currencyResponses.isEmpty()){
-                JsonUtil.sendMessage(ErrorType.NO_CURRENCY.getMessage(), HttpServletResponse.SC_OK, resp);
-                return;
-            }
-            JsonUtil.sendJson(currencyResponses, HttpServletResponse.SC_OK, resp);
-        }catch (DataAccessException e){
-            JsonUtil.sendError(e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resp);
+        List<CurrencyResponseDto> currencyResponses = currencyService.getCurrencies();
+        if (currencyResponses.isEmpty()) {
+            JsonUtil.sendMessage(ErrorType.NO_CURRENCY.getMessage(), HttpServletResponse.SC_OK, resp);
+            return;
         }
+        JsonUtil.sendJson(currencyResponses, HttpServletResponse.SC_OK, resp);
 
     }
+
 }
