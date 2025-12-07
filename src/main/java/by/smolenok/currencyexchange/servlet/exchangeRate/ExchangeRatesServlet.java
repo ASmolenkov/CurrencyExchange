@@ -4,6 +4,7 @@ import by.smolenok.currencyexchange.dto.request.ExchangeRateRequestDto;
 import by.smolenok.currencyexchange.dto.response.ExchangeRatesResponseDto;
 import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.service.ExchangeRatesService;
+import by.smolenok.currencyexchange.utils.ApplicationConfig;
 import by.smolenok.currencyexchange.utils.JsonUtil;
 import by.smolenok.currencyexchange.utils.ValidationUtils;
 import jakarta.servlet.ServletException;
@@ -20,7 +21,12 @@ import java.util.List;
 @Slf4j
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
-    private final ExchangeRatesService exchangeRatesService = new ExchangeRatesService();
+    private ExchangeRatesService exchangeRatesService;
+
+    @Override
+    public void init() throws ServletException {
+        this.exchangeRatesService = ApplicationConfig.getExchangeRatesService();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

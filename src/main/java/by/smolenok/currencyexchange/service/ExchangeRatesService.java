@@ -17,8 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 public class ExchangeRatesService {
-    private final ExchangeRatesDao exchangeRatesDao = new ExchangeRatesDao();
-    private final CurrencyDao currencyDao = new CurrencyDao();
+    private ExchangeRatesDao exchangeRatesDao;
+    private CurrencyDao jdbsCurrencyDao;
+
+    public ExchangeRatesService(ExchangeRatesDao exchangeRatesDao, CurrencyDao jdbsCurrencyDao) {
+        this.exchangeRatesDao = exchangeRatesDao;
+        this.jdbsCurrencyDao = jdbsCurrencyDao;
+    }
 
     public List<ExchangeRatesResponseDto> getExchangeRates() {
         List<ExchangeRate> exchangeRates = exchangeRatesDao.findAll();
@@ -47,14 +52,14 @@ public class ExchangeRatesService {
         }
         Currency baseCurrency;
         try {
-            baseCurrency = currencyDao.findByCode(baseCurrencyCode);
+            baseCurrency = jdbsCurrencyDao.findByCode(baseCurrencyCode);
         } catch (ModelNotFoundException e) {
             throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
                     .formatted(baseCurrencyCode));
         }
         Currency targetCurrency;
         try {
-            targetCurrency = currencyDao.findByCode(targetCurrencyCode);
+            targetCurrency = jdbsCurrencyDao.findByCode(targetCurrencyCode);
         } catch (ModelNotFoundException e) {
             throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
                     .formatted(targetCurrencyCode));

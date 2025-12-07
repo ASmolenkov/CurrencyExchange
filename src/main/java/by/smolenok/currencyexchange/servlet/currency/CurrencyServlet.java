@@ -5,6 +5,7 @@ import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
 import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.*;
 import by.smolenok.currencyexchange.service.CurrencyService;
+import by.smolenok.currencyexchange.utils.ApplicationConfig;
 import by.smolenok.currencyexchange.utils.JsonUtil;
 import by.smolenok.currencyexchange.utils.PathUtils;
 import by.smolenok.currencyexchange.utils.ValidationUtils;
@@ -24,7 +25,12 @@ public class CurrencyServlet extends HttpServlet {
     private static final String PARAM_NAME = "name";
     private static final String PARAM_CODE = "code";
     private static final String PARAM_SIGN = "sign";
-    private final CurrencyService currencyService = new CurrencyService();
+    private CurrencyService currencyService;
+
+    @Override
+    public void init() throws ServletException {
+        this.currencyService = ApplicationConfig.getCurrencyService();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

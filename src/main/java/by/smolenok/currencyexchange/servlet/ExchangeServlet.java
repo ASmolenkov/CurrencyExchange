@@ -2,6 +2,7 @@ package by.smolenok.currencyexchange.servlet;
 
 import by.smolenok.currencyexchange.dto.response.ExchangeDto;
 import by.smolenok.currencyexchange.service.ExchangeService;
+import by.smolenok.currencyexchange.utils.ApplicationConfig;
 import by.smolenok.currencyexchange.utils.JsonUtil;
 import by.smolenok.currencyexchange.utils.ValidationUtils;
 import jakarta.servlet.ServletException;
@@ -17,7 +18,13 @@ import java.math.BigDecimal;
 @Slf4j
 @WebServlet("/exchange")
 public class ExchangeServlet  extends HttpServlet {
-    ExchangeService exchangeService = new ExchangeService();
+    private ExchangeService exchangeService;
+
+    @Override
+    public void init() throws ServletException {
+        this.exchangeService = ApplicationConfig.getExchangeService();
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String from = req.getParameter("from");
