@@ -32,9 +32,11 @@ public enum ErrorType {
 
 
     DATABASE_ERROR("Service temporarily unavailable"),
-    DUPLICATE_RECORD("UNIQUE constraint failed");
+    DUPLICATE_RECORD("UNIQUE constraint failed"),
 
-
+    FIELD_REQUIRED_TEMPLATE("Field '%s' is required"),
+    FIELD_MUST_BE_NUMBER_TEMPLATE("Field '%s' must be a number"),
+    FIELD_MUST_BE_POSITIVE_TEMPLATE("Field '%s' must be greater than zero");
     private final String message;
 
     ErrorType(String message) {

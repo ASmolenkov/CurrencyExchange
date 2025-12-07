@@ -45,18 +45,32 @@ public class ValidationUtils {
         }
     }
 
-    public void validateRate(String rate) {
-        if(isEmpty(rate)){
-            throw new ValidationRateException(ErrorType.EXCHANGE_RATE_NOT_EMPTY.getMessage());
+    public void validatePositiveNumber(String value, String fieldName){
+        if (isEmpty(value)) {
+            throw new ValidationException(
+                    ErrorType.FIELD_REQUIRED_TEMPLATE.getMessage().formatted(fieldName)
+            );
         }
         try {
-            BigDecimal result = new BigDecimal(rate);
-            if (result.compareTo(BigDecimal.ZERO) < 0) {
-                throw new ValidationRateException(ErrorType.EXCHANGE_RATE_BELOW_ZERO.getMessage());
+            BigDecimal number = new BigDecimal(value);
+            if (number.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new ValidationException(
+                        ErrorType.FIELD_MUST_BE_POSITIVE_TEMPLATE.getMessage().formatted(fieldName)
+                );
             }
         } catch (NumberFormatException e) {
-            throw new ValidationRateException(ErrorType.EXCHANGE_RATE_MUST_BE_NUMBER.getMessage());
+            throw new ValidationException(
+                    ErrorType.FIELD_MUST_BE_NUMBER_TEMPLATE.getMessage().formatted(fieldName)
+            );
         }
+    }
+
+    public void validateRate(String rate) {
+        validatePositiveNumber(rate, "rate");
+    }
+
+    public void validateAmount(String amount) {
+        validatePositiveNumber(amount, "amount");
     }
 
     public boolean isEmpty(String str) {
