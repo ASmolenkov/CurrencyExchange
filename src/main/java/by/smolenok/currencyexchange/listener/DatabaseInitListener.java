@@ -7,26 +7,34 @@ import jakarta.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 @WebListener
 public class DatabaseInitListener implements ServletContextListener {
     private static final Logger log = LoggerFactory.getLogger(DatabaseInitListener.class);
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         log.info("🔧 Initializing database...");
-        String dbPath = sce.getServletContext().getRealPath("/WEB-INF/database/currencyExchange.db");
-        if (dbPath == null) {
-            String msg = "Cannot resolve database path. Ensure app is running in a servlet container (e.g., Tomcat).";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
+
+        // ✅ Надёжный путь: в домашней папке пользователя
+        String dbDir = System.getProperty("user.home") + File.separator + ".currencyexchange";
+        String dbPath = dbDir + File.separator + "currencyExchange.db";
+
+        // Логируем для уверенности
+        log.info("🎯 Target database file: {}", dbPath);
+
+        // Инициализируем менеджер — он сам создаст папку при необходимости
         DatabaseManager.init(dbPath);
+
+        // Выполняем схему
         DatabaseManager.executeSqlScript("schema.sql");
 
-        log.info("Database initialized successfully");
+        log.info("✅ Database is ready");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        log.info("🧹 Application shutdown — database connections closed automatically");
+        log.info("🧹 Application shutdown — SQLite connections closed automatically");
     }
 }

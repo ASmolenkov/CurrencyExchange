@@ -22,9 +22,7 @@ import java.io.IOException;
 @WebServlet("/currency/*")
 public class CurrencyServlet extends HttpServlet {
 
-    private static final String PARAM_NAME = "name";
-    private static final String PARAM_CODE = "code";
-    private static final String PARAM_SIGN = "sign";
+
     private CurrencyService currencyService;
 
     @Override
@@ -43,19 +41,4 @@ public class CurrencyServlet extends HttpServlet {
 
     }
 
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter(PARAM_NAME);
-        String code = req.getParameter(PARAM_CODE);
-        String sign = req.getParameter(PARAM_SIGN);
-
-        ValidationUtils.validateRequiredParameter(name, PARAM_NAME);
-        ValidationUtils.validateCurrencyCode(code);
-
-        CurrencyRequestDto currencyRequest = CurrencyRequestDto.of(name, code, sign);
-
-        CurrencyResponseDto currencyResponse = currencyService.createCurrency(currencyRequest);
-        JsonUtil.sendJson(currencyResponse, HttpServletResponse.SC_CREATED, resp);
-    }
 }

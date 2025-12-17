@@ -12,6 +12,6 @@ public class PathUtils {
         if(pathInfo == null || pathInfo.isEmpty() || "/".equals(pathInfo)){
             throw new ValidationException(ErrorType.NO_CURRENCY_PAIR.getMessage());
         }
-        return ValidationUtils.parseCurrencyCode(pathInfo);
+        return ParseUtil.parseCurrencyCode(pathInfo);
     }
 }

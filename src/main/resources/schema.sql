@@ -16,3 +16,8 @@ CREATE TABLE IF NOT EXISTS exchange_rates
     FOREIGN KEY (target_currency_id) REFERENCES currencies (id),
     UNIQUE (base_currency_id, target_currency_id)
 );
+
+INSERT OR IGNORE INTO currencies (code, full_name, sign) VALUES
+                                                            ('USD', 'US Dollar', '$'),
+                                                            ('EUR', 'Euro', '€'),
+                                                            ('RUB', 'Russian Ruble', '₽');

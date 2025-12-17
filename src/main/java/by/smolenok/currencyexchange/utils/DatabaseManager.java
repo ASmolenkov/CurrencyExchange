@@ -1,7 +1,10 @@
 package by.smolenok.currencyexchange.utils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -27,15 +30,26 @@ public class DatabaseManager {
     private DatabaseManager() {}
 
     public static void  init(String dbFilePath){
-        if(dbFilePath == null || dbFilePath.trim().isEmpty()){
+        if (dbFilePath == null || dbFilePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Database file path cannot be null or empty");
         }
-        if(dbUrl == null){
-            synchronized (DatabaseManager.class){
-                if(dbUrl == null){
-                    dbUrl = "jdbc:sqlite:" + dbFilePath;
-                    log.debug("Connected to database at: {}", dbFilePath);
-                }
+
+        // Приводим к абсолютному пути и нормализуем
+        Path path = Paths.get(dbFilePath).toAbsolutePath().normalize();
+        File dbFile = path.toFile();
+
+        // Создаём родительскую папку, если не существует
+        File parentDir = dbFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            if (!parentDir.mkdirs()) {
+                throw new RuntimeException("Failed to create database directory: " + parentDir);
+            }
+        }
+
+        synchronized (DatabaseManager.class) {
+            if (dbUrl == null) {
+                dbUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+                log.info("Intialized database at: {}", dbFile.getAbsolutePath());
             }
         }
     }

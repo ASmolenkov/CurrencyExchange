@@ -6,6 +6,7 @@ import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.service.ExchangeRatesService;
 import by.smolenok.currencyexchange.utils.ApplicationConfig;
 import by.smolenok.currencyexchange.utils.JsonUtil;
+import by.smolenok.currencyexchange.utils.ParseUtil;
 import by.smolenok.currencyexchange.utils.ValidationUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -46,7 +47,7 @@ public class ExchangeRatesServlet extends HttpServlet {
 
         ValidationUtils.validatePairCode(baseCurrencyCode, targetCurrencyCode);
         ValidationUtils.validateRate(rate);
-        BigDecimal rateNumber = ValidationUtils.parseExchangeRate(rate);
+        BigDecimal rateNumber = ParseUtil.parseExchangeRate(rate);
 
         ExchangeRateRequestDto rateRequestDto = new ExchangeRateRequestDto(baseCurrencyCode, targetCurrencyCode, rateNumber);
         ExchangeRatesResponseDto exchangeRatesResponseDto = exchangeRatesService.createExchangeRates(rateRequestDto);

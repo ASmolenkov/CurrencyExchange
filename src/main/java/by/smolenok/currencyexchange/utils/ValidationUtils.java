@@ -83,11 +83,5 @@ public class ValidationUtils {
         }
     }
 
-    public BigDecimal parseExchangeRate(String rate) {
-        return new BigDecimal(rate);
-    }
 
-    public String parseCurrencyCode(String currencyCode) {
-        return currencyCode.replaceAll("^/+", "").toUpperCase();
-    }
 }

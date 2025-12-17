@@ -14,10 +14,21 @@ public class ContentTypeFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
-        if(response.getContentType() == null){
+        String path = request.getRequestURI();
+
+        // ✅ Обрабатываем корневой путь и статику — не трогаем Content-Type
+        if (path.equals("/") || path.endsWith(".html") || path.endsWith(".css") || path.endsWith(".js")
+                || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".gif")) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        // ✅ Для API — устанавливаем JSON по умолчанию
+        if (response.getContentType() == null) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
         }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }
