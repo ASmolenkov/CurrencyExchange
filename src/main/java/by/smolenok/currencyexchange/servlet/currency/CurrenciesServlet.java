@@ -45,8 +45,9 @@ public class CurrenciesServlet extends HttpServlet {
         String code = req.getParameter(PARAM_CODE);
         String sign = req.getParameter(PARAM_SIGN);
 
-        ValidationUtils.validateRequiredParameter(name, PARAM_NAME);
+        ValidationUtils.validationName(name);
         ValidationUtils.validateCurrencyCode(code);
+        ValidationUtils.validationSign(sign);
 
         CurrencyRequestDto currencyRequest = CurrencyRequestDto.of(name, code, sign);
 

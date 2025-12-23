@@ -1,4 +1,6 @@
-package by.smolenok.currencyexchange.exeptions;
+package by.smolenok.currencyexchange.exeptions.validation;
+
+import by.smolenok.currencyexchange.exeptions.CurrencyExchangeException;
 
 public class ValidationException extends CurrencyExchangeException {
 

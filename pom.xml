@@ -58,6 +58,8 @@
 
     </dependencies>
     <build>
+
+        <finalName>CurrencyExchange</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

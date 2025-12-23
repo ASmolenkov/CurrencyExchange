@@ -2,9 +2,10 @@ package by.smolenok.currencyexchange.utils;
 
 
 import by.smolenok.currencyexchange.enums.ErrorType;
-import by.smolenok.currencyexchange.exeptions.ValidationCodeException;
-import by.smolenok.currencyexchange.exeptions.ValidationException;
-import by.smolenok.currencyexchange.exeptions.ValidationRateException;
+import by.smolenok.currencyexchange.exeptions.validation.ValidationCodeException;
+import by.smolenok.currencyexchange.exeptions.validation.ValidationException;
+import by.smolenok.currencyexchange.exeptions.validation.ValidationNameException;
+import by.smolenok.currencyexchange.exeptions.validation.ValidationSignException;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -12,12 +13,27 @@ import java.math.BigDecimal;
 @UtilityClass
 public class ValidationUtils {
 
+    public void validationName(String name){
+        if(isEmpty(name)){
+            throw new ValidationNameException(ErrorType.CURRENCY_NAME_MISSING.getMessage());
+        }
+        if(name.length() > 35){
+            throw new ValidationNameException(ErrorType.INVALID_CURRENCY_NAME_LENGTH.getMessage());
+        }
+    }
+
+    public void validationSign(String sign){
+        if(sign.trim().length() > 1){
+            throw new ValidationSignException(ErrorType.INVALID_CURRENCY_SIGN_LENGTH_TEMPLATE.getMessage().formatted(sign));
+        }
+    }
+
     public void validateCurrencyCode(String code) {
         if (isEmpty(code)) {
             throw new ValidationCodeException(ErrorType.CURRENCY_CODE_MISSING.getMessage());
         }
         if (code.length() != 3) {
-            throw new ValidationCodeException(ErrorType.INVALID_CURRENCY_LENGTH_TEMPLATE.getMessage().formatted(code));
+            throw new ValidationCodeException(ErrorType.INVALID_CURRENCY_CODE_LENGTH_TEMPLATE.getMessage().formatted(code));
         }
         if (!code.matches("[A-Za-z]{3}")) {
             throw new ValidationCodeException(ErrorType.INVALID_CURRENCY_CODE_TEMPLATE.getMessage().formatted(code));

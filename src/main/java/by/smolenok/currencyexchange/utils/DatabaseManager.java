@@ -34,11 +34,11 @@ public class DatabaseManager {
             throw new IllegalArgumentException("Database file path cannot be null or empty");
         }
 
-        // Приводим к абсолютному пути и нормализуем
+
         Path path = Paths.get(dbFilePath).toAbsolutePath().normalize();
         File dbFile = path.toFile();
 
-        // Создаём родительскую папку, если не существует
+
         File parentDir = dbFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             if (!parentDir.mkdirs()) {
@@ -49,7 +49,7 @@ public class DatabaseManager {
         synchronized (DatabaseManager.class) {
             if (dbUrl == null) {
                 dbUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-                log.info("Intialized database at: {}", dbFile.getAbsolutePath());
+                log.info("Initialized database at: {}", dbFile.getAbsolutePath());
             }
         }
     }

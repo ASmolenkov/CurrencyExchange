@@ -1,10 +1,8 @@
 package by.smolenok.currencyexchange.utils;
 
 import by.smolenok.currencyexchange.enums.ErrorType;
-import by.smolenok.currencyexchange.exeptions.ValidationException;
+import by.smolenok.currencyexchange.exeptions.validation.ValidationException;
 import lombok.experimental.UtilityClass;
-
-import java.math.BigDecimal;
 
 @UtilityClass
 public class PathUtils {

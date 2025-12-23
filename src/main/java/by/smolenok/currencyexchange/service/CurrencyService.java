@@ -4,6 +4,7 @@ import by.smolenok.currencyexchange.dao.CurrencyDao;
 import by.smolenok.currencyexchange.dao.JdbsCurrencyDao;
 import by.smolenok.currencyexchange.dto.request.CurrencyRequestDto;
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
+import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
 import by.smolenok.currencyexchange.exeptions.UniqueDataException;
@@ -35,7 +36,7 @@ public class CurrencyService {
 
     public CurrencyResponseDto createCurrency(CurrencyRequestDto currencyRequest) throws DataAccessException, UniqueDataException {
         if(jdbsCurrencyDao.existsByCode(currencyRequest.code())){
-            throw new UniqueDataException(currencyRequest.code());
+            throw new UniqueDataException(ErrorType.CURRENCY_CODE_DUPLICATE.getMessage());
         }
         Currency currency = Currency.builder()
                 .name(currencyRequest.name())

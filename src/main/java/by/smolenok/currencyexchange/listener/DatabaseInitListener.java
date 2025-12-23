@@ -17,17 +17,17 @@ public class DatabaseInitListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         log.info("🔧 Initializing database...");
 
-        // ✅ Надёжный путь: в домашней папке пользователя
+
         String dbDir = System.getProperty("user.home") + File.separator + ".currencyexchange";
         String dbPath = dbDir + File.separator + "currencyExchange.db";
 
-        // Логируем для уверенности
+
         log.info("🎯 Target database file: {}", dbPath);
 
-        // Инициализируем менеджер — он сам создаст папку при необходимости
+
         DatabaseManager.init(dbPath);
 
-        // Выполняем схему
+
         DatabaseManager.executeSqlScript("schema.sql");
 
         log.info("✅ Database is ready");

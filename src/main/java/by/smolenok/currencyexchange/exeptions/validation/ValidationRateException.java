@@ -1,4 +1,4 @@
-package by.smolenok.currencyexchange.exeptions;
+package by.smolenok.currencyexchange.exeptions.validation;
 
 public class ValidationRateException extends ValidationException {
     public ValidationRateException(String message) {

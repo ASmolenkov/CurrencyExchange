@@ -4,7 +4,7 @@ import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
 import by.smolenok.currencyexchange.exeptions.UniqueDataException;
-import by.smolenok.currencyexchange.exeptions.ValidationException;
+import by.smolenok.currencyexchange.exeptions.validation.ValidationException;
 import by.smolenok.currencyexchange.utils.JsonUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;

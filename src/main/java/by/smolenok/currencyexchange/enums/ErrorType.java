@@ -4,17 +4,22 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorType {
+    INVALID_CURRENCY_SIGN_LENGTH_TEMPLATE("The currency sign must not be exactly 1 character (Your sign: '%s')"),
+
     CURRENCY_NOT_FOUND_TEMPLATE("Currency with this code '%s' not found"),
     CURRENCY_ALREADY_EXISTS_TEMPLATE("Currency with this code '%s' already exists"),
     INVALID_CURRENCY_CODE_TEMPLATE("Currency code must contain 3 uppercase Latin letters: '%s'"),
-    INVALID_CURRENCY_LENGTH_TEMPLATE("The currency code must be exactly 3 characters long (Your code: '%s')"),
+    INVALID_CURRENCY_CODE_LENGTH_TEMPLATE("The currency code must be exactly 3 characters long (Your code: '%s')"),
+    INVALID_CURRENCY_NAME_LENGTH("Currency naming should not be longer than 35 characters"),
     SAME_CURRENCY_PAIRS_TEMPLATE("Currency pair codes must not be the same. (Your code: '%s' - '%s')"),
     CURRENCY_CODE_MISSING("Currency code is required"),
+    CURRENCY_NAME_MISSING("Currency name is required"),
     INVALID_CREATE_CURRENCY_NO_ID("Creating currency failed, no ID obtained."),
     CURRENCY_SAVE_FAILED("Error saving currency to database"),
     CURRENCIES_RETRIEVAL_FAILED("Error retrieving currencies from the database"),
     NO_CURRENCY("There are no currency"),
     NO_CURRENCY_PAIR("Currency pair codes are missing in the address"),
+    CURRENCY_CODE_DUPLICATE("A currency with this code already exists."),
 
     EXCHANGE_RATE_NOT_FOUND_TEMPLATE("Exchange rate not found for the pair '%s' - '%s'"),
     EXCHANGE_RATE_ALREADY_EXISTS("Exchange rates with this code '%s' - '%s' already exists"),
