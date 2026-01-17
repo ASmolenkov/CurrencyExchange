@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 public class ExchangeRatesService {
-    private ExchangeRatesDao exchangeRatesDao;
-    private CurrencyDao jdbsCurrencyDao;
+    private final ExchangeRatesDao exchangeRatesDao;
+    private final CurrencyDao jdbsCurrencyDao;
 
     public ExchangeRatesService(ExchangeRatesDao exchangeRatesDao, CurrencyDao jdbsCurrencyDao) {
         this.exchangeRatesDao = exchangeRatesDao;

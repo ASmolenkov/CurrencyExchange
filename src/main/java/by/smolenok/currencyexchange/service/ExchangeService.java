@@ -15,7 +15,7 @@ import java.math.RoundingMode;
 
 
 public class ExchangeService {
-    ExchangeRatesDao exchangeRatesDao;
+    private final ExchangeRatesDao exchangeRatesDao;
 
     public ExchangeService(ExchangeRatesDao exchangeRatesDao) {
         this.exchangeRatesDao = exchangeRatesDao;

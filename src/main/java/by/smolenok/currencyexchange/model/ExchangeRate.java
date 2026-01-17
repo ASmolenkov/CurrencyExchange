@@ -7,11 +7,11 @@ import lombok.With;
 import java.math.BigDecimal;
 
 @Value
-@With
 @Builder
 public class ExchangeRate {
     int id;
     Currency baseCurrency;
     Currency targetCurrency;
+    @With
     BigDecimal rate;
 }
