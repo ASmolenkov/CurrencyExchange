@@ -1,7 +1,6 @@
 package by.smolenok.currencyexchange.service;
 
 import by.smolenok.currencyexchange.dao.CurrencyDao;
-import by.smolenok.currencyexchange.dao.JdbsCurrencyDao;
 import by.smolenok.currencyexchange.dto.request.CurrencyRequestDto;
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
 import by.smolenok.currencyexchange.enums.ErrorType;
@@ -10,32 +9,35 @@ import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
 import by.smolenok.currencyexchange.exeptions.UniqueDataException;
 import by.smolenok.currencyexchange.mapper.CurrencyMapper;
 import by.smolenok.currencyexchange.model.Currency;
-import by.smolenok.currencyexchange.utils.ApplicationConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class CurrencyService {
-    private final CurrencyDao jdbsCurrencyDao;
+    private final CurrencyDao jdbcCurrencyDao;
 
     public CurrencyService(CurrencyDao jdbsCurrencyDao) {
-        this.jdbsCurrencyDao = jdbsCurrencyDao;
+        this.jdbcCurrencyDao = jdbsCurrencyDao;
     }
 
     public List<CurrencyResponseDto> getCurrencies() throws DataAccessException {
-        return jdbsCurrencyDao.findAll().stream().map(CurrencyMapper::toResponse).collect(Collectors.toList());
+        return jdbcCurrencyDao.findAll().stream().map(CurrencyMapper::toResponse).collect(Collectors.toList());
     }
 
     public CurrencyResponseDto getCurrency(String codeCurrency) throws ModelNotFoundException {
         log.info("Start getCurrencyByCode");
-        Currency currency = jdbsCurrencyDao.findByCode(codeCurrency);
-        return CurrencyMapper.toResponse(currency);
+        Optional <Currency> currency = jdbcCurrencyDao.findByCode(codeCurrency);
+        if(currency.isEmpty()){
+            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage().formatted(codeCurrency));
+        }
+        return CurrencyMapper.toResponse(currency.get());
     }
 
     public CurrencyResponseDto createCurrency(CurrencyRequestDto currencyRequest) throws DataAccessException, UniqueDataException {
-        if(jdbsCurrencyDao.existsByCode(currencyRequest.code())){
+        if(jdbcCurrencyDao.existsByCode(currencyRequest.code())){
             throw new UniqueDataException(ErrorType.CURRENCY_CODE_DUPLICATE.getMessage());
         }
         Currency currency = Currency.builder()
@@ -43,7 +45,7 @@ public class CurrencyService {
                 .code(currencyRequest.code())
                 .sign(currencyRequest.sign())
                 .build();
-        Currency currencyUpdate = jdbsCurrencyDao.save(currency);
+        Currency currencyUpdate = jdbcCurrencyDao.save(currency);
         return CurrencyMapper.toResponse(currencyUpdate);
     }
 }

@@ -1,8 +1,6 @@
 package by.smolenok.currencyexchange.servlet.currency;
 
-import by.smolenok.currencyexchange.dto.request.CurrencyRequestDto;
 import by.smolenok.currencyexchange.dto.response.CurrencyResponseDto;
-import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.*;
 import by.smolenok.currencyexchange.service.CurrencyService;
 import by.smolenok.currencyexchange.utils.ApplicationConfig;
@@ -22,7 +20,6 @@ import java.io.IOException;
 @WebServlet("/currency/*")
 public class CurrencyServlet extends HttpServlet {
 
-
     private CurrencyService currencyService;
 
     @Override
@@ -32,7 +29,6 @@ public class CurrencyServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String path = req.getPathInfo();
         String codeCurrency = PathUtils.extractCurrencyCode(path);
         ValidationUtils.validateCurrencyCode(codeCurrency);

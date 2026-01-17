@@ -15,20 +15,22 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 public class ExchangeRatesService {
     private final ExchangeRatesDao exchangeRatesDao;
-    private final CurrencyDao jdbsCurrencyDao;
+    private final CurrencyDao jdbcCurrencyDao;
 
     public ExchangeRatesService(ExchangeRatesDao exchangeRatesDao, CurrencyDao jdbsCurrencyDao) {
         this.exchangeRatesDao = exchangeRatesDao;
-        this.jdbsCurrencyDao = jdbsCurrencyDao;
+        this.jdbcCurrencyDao = jdbsCurrencyDao;
     }
 
     public List<ExchangeRatesResponseDto> getExchangeRates() {
         List<ExchangeRate> exchangeRates = exchangeRatesDao.findAll();
         List<ExchangeRatesResponseDto> exchangeRatesResponses = new ArrayList<>();
-        for (ExchangeRate er: exchangeRates){
+        for (ExchangeRate er : exchangeRates) {
             ExchangeRatesResponseDto exchangeRatesResponseDto = ExchangeRateMapper.toResponse(er);
             exchangeRatesResponses.add(exchangeRatesResponseDto);
         }
@@ -37,7 +39,7 @@ public class ExchangeRatesService {
 
     public ExchangeRatesResponseDto getExchangeRatesByCode(String baseCode, String targetCode) throws DataAccessException, ModelNotFoundException {
         log.info("Base Code = {}, Target Code = {}", baseCode, targetCode);
-        ExchangeRate exchangeRate = exchangeRatesDao.findByCode(baseCode,targetCode);
+        ExchangeRate exchangeRate = exchangeRatesDao.findByCode(baseCode, targetCode);
         return ExchangeRateMapper.toResponse(exchangeRate);
     }
 
@@ -46,24 +48,27 @@ public class ExchangeRatesService {
         String baseCurrencyCode = rateRequestDto.baseCurrencyCode();
         String targetCurrencyCode = rateRequestDto.targetCurrencyCode();
 
-        if(exchangeRatesDao.existsByCode(baseCurrencyCode, targetCurrencyCode)){
+        if (exchangeRatesDao.existsByCode(baseCurrencyCode, targetCurrencyCode)) {
             throw new UniqueDataException(ErrorType.EXCHANGE_RATE_ALREADY_EXISTS.getMessage()
                     .formatted(baseCurrencyCode, targetCurrencyCode));
         }
         Currency baseCurrency;
-        try {
-            baseCurrency = jdbsCurrencyDao.findByCode(baseCurrencyCode);
-        } catch (ModelNotFoundException e) {
+
+        Optional<Currency> oneCurrency = jdbcCurrencyDao.findByCode(baseCurrencyCode);
+        if (oneCurrency.isEmpty()) {
             throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
                     .formatted(baseCurrencyCode));
         }
+        baseCurrency = oneCurrency.get();
+
         Currency targetCurrency;
-        try {
-            targetCurrency = jdbsCurrencyDao.findByCode(targetCurrencyCode);
-        } catch (ModelNotFoundException e) {
+        Optional<Currency> secondCurrency = jdbcCurrencyDao.findByCode(targetCurrencyCode);
+        if (secondCurrency.isEmpty()) {
             throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
                     .formatted(targetCurrencyCode));
         }
+        targetCurrency = secondCurrency.get();
+
 
         ExchangeRate exchangeRate = ExchangeRate.builder()
                 .baseCurrency(baseCurrency)

@@ -12,9 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
-public class JdbsCurrencyDao implements CurrencyDao {
+public class JdbcCurrencyDao implements CurrencyDao {
     private static final String SQL_FIND_ALL = """
             SELECT * FROM currencies
             """;
@@ -79,15 +80,16 @@ public class JdbsCurrencyDao implements CurrencyDao {
     }
 
     @Override
-    public Currency findByCode(String code) throws ModelNotFoundException {
+    public Optional<Currency> findByCode(String code) throws ModelNotFoundException {
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_CODE)) {
             statement.setString(1, code);
             ResultSet resultSet = statement.executeQuery();
             if(!resultSet.next()){
-                throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage().formatted(code));
+                return Optional.empty();
             }
-            return CurrencyMapper.resultSetToCurrency(resultSet);
+            Currency currency = CurrencyMapper.resultSetToCurrency(resultSet);
+            return Optional.of(currency);
 
         } catch (SQLException e) {
             throw new DataAccessException(ErrorType.CURRENCIES_RETRIEVAL_FAILED.getMessage(), e);
