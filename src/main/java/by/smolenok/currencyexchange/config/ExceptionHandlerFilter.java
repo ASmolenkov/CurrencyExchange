@@ -1,5 +1,7 @@
 package by.smolenok.currencyexchange.config;
 
+import by.smolenok.currencyexchange.dto.response.ErrorResponse;
+import by.smolenok.currencyexchange.dto.response.ErrorResponseFactory;
 import by.smolenok.currencyexchange.enums.ErrorType;
 import by.smolenok.currencyexchange.exeptions.DataAccessException;
 import by.smolenok.currencyexchange.exeptions.ModelNotFoundException;
@@ -15,6 +17,7 @@ import java.io.IOException;
 @Slf4j
 @WebFilter("/*")
 public class ExceptionHandlerFilter implements Filter {
+    private final ErrorResponseFactory errorResponseFactory = new ErrorResponseFactory();
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
@@ -27,25 +30,8 @@ public class ExceptionHandlerFilter implements Filter {
     }
 
     private void handleException(Exception e, HttpServletResponse response) throws IOException {
-        int status;
-        String message;
-        if (e instanceof ValidationException) {
-            status = HttpServletResponse.SC_BAD_REQUEST;
-            message = e.getMessage();
-        } else if (e instanceof ModelNotFoundException) {
-            status = HttpServletResponse.SC_NOT_FOUND;
-            message = e.getMessage();
-        }else if(e instanceof DataAccessException){
-            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            message = e.getMessage();
-        }else if(e instanceof UniqueDataException){
-            status = HttpServletResponse.SC_CONFLICT;
-            message = e.getMessage();
-        }else {
-            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            message = ErrorType.DATABASE_ERROR.getMessage();
-        }
+        ErrorResponse error = errorResponseFactory.from(e);
         log.error(e.getMessage(), e);
-        JsonUtil.sendError(message, status, response);
+        JsonUtil.sendError(error.message(), error.status(), response);
     }
 }

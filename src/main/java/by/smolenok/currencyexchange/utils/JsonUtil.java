@@ -1,6 +1,5 @@
 package by.smolenok.currencyexchange.utils;
 
-import by.smolenok.currencyexchange.dto.response.ErrorApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -19,8 +18,7 @@ public class JsonUtil {
     }
 
     public static void sendError(String message, int errorCode, HttpServletResponse response) throws IOException {
-        ErrorApi errorApi = new ErrorApi(message);
-        sendJson(errorApi, errorCode, response);
+        sendMessage(message, errorCode, response);
     }
 
     public static void sendMessage(String message, int errorCode, HttpServletResponse response) throws IOException {
