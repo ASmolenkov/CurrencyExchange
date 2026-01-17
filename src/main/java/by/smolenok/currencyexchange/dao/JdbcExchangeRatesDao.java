@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class JdbcExchangeRatesDao implements ExchangeRatesDao {
@@ -90,35 +91,22 @@ public class JdbcExchangeRatesDao implements ExchangeRatesDao {
     }
 
     @Override
-    public ExchangeRate findByCode(String baseCode, String targetCode) {
+    public Optional<ExchangeRate>  findByCode(String baseCode, String targetCode) {
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
             stmt.setString(1, baseCode);
             stmt.setString(2, targetCode);
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (!resultSet.next()) {
-                    throw new ModelNotFoundException(ErrorType.EXCHANGE_RATE_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCode, targetCode));
+                    return Optional.empty();
+
                 }
-                return ExchangeRateMapper.resultSetToExchangeRate(resultSet);
+                ExchangeRate exchangeRate = ExchangeRateMapper.resultSetToExchangeRate(resultSet);
+                return Optional.of(exchangeRate);
             }
         } catch (SQLException e) {
             throw new DataAccessException(ErrorType.ERROR_RETRIEVING_EXCHANGE_RATES.getMessage());
         }
-    }
-
-    @Override
-    public boolean existsByCode(String baseCode, String targetCode) {
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(SQL_FIND_BY_CODE)) {
-            stmt.setString(1, baseCode);
-            stmt.setString(2, targetCode);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                return resultSet.next();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(ErrorType.DATABASE_ERROR.getMessage(), e);
-        }
-
     }
 
     @Override

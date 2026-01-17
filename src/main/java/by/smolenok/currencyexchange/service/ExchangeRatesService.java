@@ -39,8 +39,9 @@ public class ExchangeRatesService {
 
     public ExchangeRatesResponseDto getExchangeRatesByCode(String baseCode, String targetCode) throws DataAccessException, ModelNotFoundException {
         log.info("Base Code = {}, Target Code = {}", baseCode, targetCode);
-        ExchangeRate exchangeRate = exchangeRatesDao.findByCode(baseCode, targetCode);
-        return ExchangeRateMapper.toResponse(exchangeRate);
+        Optional <ExchangeRate>  findExchangeRate = exchangeRatesDao.findByCode(baseCode, targetCode);
+        modelNotFound(findExchangeRate.isEmpty(), baseCode, targetCode);
+        return ExchangeRateMapper.toResponse(findExchangeRate.get());
     }
 
 
@@ -48,25 +49,21 @@ public class ExchangeRatesService {
         String baseCurrencyCode = rateRequestDto.baseCurrencyCode();
         String targetCurrencyCode = rateRequestDto.targetCurrencyCode();
 
-        if (exchangeRatesDao.existsByCode(baseCurrencyCode, targetCurrencyCode)) {
+        Optional<ExchangeRate> findExchangeRate = exchangeRatesDao.findByCode(baseCurrencyCode, targetCurrencyCode);
+
+        if(findExchangeRate.isPresent()){
             throw new UniqueDataException(ErrorType.EXCHANGE_RATE_ALREADY_EXISTS.getMessage()
                     .formatted(baseCurrencyCode, targetCurrencyCode));
         }
-        Currency baseCurrency;
 
+        Currency baseCurrency;
         Optional<Currency> oneCurrency = jdbcCurrencyDao.findByCode(baseCurrencyCode);
-        if (oneCurrency.isEmpty()) {
-            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
-                    .formatted(baseCurrencyCode));
-        }
+        modelNotFound(oneCurrency.isEmpty(),baseCurrencyCode);
         baseCurrency = oneCurrency.get();
 
         Currency targetCurrency;
         Optional<Currency> secondCurrency = jdbcCurrencyDao.findByCode(targetCurrencyCode);
-        if (secondCurrency.isEmpty()) {
-            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
-                    .formatted(targetCurrencyCode));
-        }
+        modelNotFound(secondCurrency.isEmpty(),targetCurrencyCode);
         targetCurrency = secondCurrency.get();
 
 
@@ -82,10 +79,27 @@ public class ExchangeRatesService {
 
 
     public ExchangeRatesResponseDto updateExchangeRate(ExchangeRateRequestDto exchangeRate) {
-        ExchangeRate existing = exchangeRatesDao.findByCode(exchangeRate.baseCurrencyCode(), exchangeRate.targetCurrencyCode());
+        String baseCurrencyCode = exchangeRate.baseCurrencyCode();
+        String targetCurrencyCode = exchangeRate.targetCurrencyCode();
+        Optional<ExchangeRate> findExisting = exchangeRatesDao.findByCode(baseCurrencyCode, targetCurrencyCode);
+        modelNotFound(findExisting.isEmpty(),baseCurrencyCode, targetCurrencyCode);
+        ExchangeRate existing = findExisting.get();
         ExchangeRate updated = existing.withRate(exchangeRate.rate());
         ExchangeRate saved = exchangeRatesDao.update(updated);
         return ExchangeRateMapper.toResponse(saved);
 
+    }
+
+    private void modelNotFound(boolean result, String baseCurrencyCode, String targetCurrencyCode){
+        if(result){
+            throw new ModelNotFoundException(ErrorType.EXCHANGE_RATE_NOT_FOUND_TEMPLATE.getMessage().formatted(baseCurrencyCode, targetCurrencyCode));
+        }
+    }
+
+    private void modelNotFound(boolean result, String currencyCode){
+        if(result){
+            throw new ModelNotFoundException(ErrorType.CURRENCY_NOT_FOUND_TEMPLATE.getMessage()
+                    .formatted(currencyCode));
+        }
     }
 }
