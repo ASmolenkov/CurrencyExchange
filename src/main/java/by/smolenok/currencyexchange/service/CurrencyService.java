@@ -37,7 +37,8 @@ public class CurrencyService {
     }
 
     public CurrencyResponseDto createCurrency(CurrencyRequestDto currencyRequest) throws DataAccessException, UniqueDataException {
-        if(jdbcCurrencyDao.existsByCode(currencyRequest.code())){
+        Optional<Currency> foundCurrency = jdbcCurrencyDao.findByCode(currencyRequest.code());
+        if(foundCurrency.isPresent()){
             throw new UniqueDataException(ErrorType.CURRENCY_CODE_DUPLICATE.getMessage());
         }
         Currency currency = Currency.builder()

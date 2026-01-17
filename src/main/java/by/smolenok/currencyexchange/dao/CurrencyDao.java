@@ -13,5 +13,4 @@ public interface CurrencyDao {
 
     Optional<Currency>  findByCode(String code) throws ModelNotFoundException;
 
-    boolean existsByCode(String code);
 }

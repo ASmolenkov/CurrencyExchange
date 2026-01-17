@@ -96,20 +96,4 @@ public class JdbcCurrencyDao implements CurrencyDao {
         }
     }
 
-    @Override
-    public boolean existsByCode(String code) {
-        String sql = """
-                SELECT 1 FROM currencies WHERE code = ? LIMIT 1
-                """;
-        try(Connection connection = DatabaseManager.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, code);
-            try(ResultSet resultSet = stmt.executeQuery()) {
-                return resultSet.next();
-            }
-        }catch (SQLException e){
-            throw new DataAccessException(ErrorType.DATABASE_ERROR.getMessage());
-        }
-
-    }
 }
