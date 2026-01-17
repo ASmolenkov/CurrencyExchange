@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorType {
+    UNEXPECTED_ERROR("An unexpected error occurred"),
     INVALID_CURRENCY_SIGN_LENGTH_TEMPLATE("The currency sign must not be exactly 1 character (Your sign: '%s')"),
 
     CURRENCY_NOT_FOUND_TEMPLATE("Currency with this code '%s' not found"),
